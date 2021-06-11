@@ -1,6 +1,6 @@
-#Setup
+# Setup
 
-##Android
+## Android
 
 Add to AndroidManifest.xml
 
@@ -19,7 +19,7 @@ Add to AndroidManifest.xml
     <!-- Permissions options for the `record_audio` group -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
-##iOS
+## iOS
 
 Add to Info.plist
 
@@ -43,17 +43,17 @@ Add to Info.plist
     <key>NSSpeechRecognitionUsageDescription</key>
     <string>speech</string>
 
-#How to use
+# How to use
 
-##Request Permission
+## Request Permission
 
     bool permission = await PermissionRequest.request(PermissionRequestType.CAMERA, onDontAskAgain: (){});
 
-##Check Permission
+## Check Permission
 
     bool permission = await PermissionRequest.check(PermissionRequestType.CAMERA);
 
-##Open Setting
+## Open Setting
 
     PermissionRequest.openSetting();
 
