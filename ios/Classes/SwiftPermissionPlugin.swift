@@ -165,3 +165,10 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
             }
         }
 }
+
+enum AppPermission
+{
+   case camera
+   case location
+   case record_audio
+}
