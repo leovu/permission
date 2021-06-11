@@ -56,39 +56,63 @@ class HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Plugin example app'),
       ),
-      body: Center(
-          child: _isAllow?Text("Allowed Storage Permission"):MaterialButton(
-              child: Text(
-                  "Request Storage Permission"
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(
+              child: Text("${_isAllow?"Allowed":"Not allow"} Camera Permission")
+          ),
+          Container(height: 10.0,),
+          _isAllow?Container():Column(
+            children: [
+              MaterialButton(
+                  child: Text(
+                      "Check Camera Permission"
+                  ),
+                  onPressed: () async {
+                    _isAllow = await PermissionRequest.check(PermissionRequestType.CAMERA);
+
+                    setState(() {
+
+                    });
+                  }
               ),
-              onPressed: () async {
-                _isAllow = await PermissionRequest.request(context, PermissionRequestType.STORAGE, (){
-                  showDialog(
-                      context: context,
-                      builder: (_){
-                        return AlertDialog(
-                          title: Text("Allowed to access"),
-                          content: Text("Select Settings to App Information, select (Permissions), enable access and re-enter this screen to use Storage"),
-                          actions: [
-                            TextButton(
-                                child: Text("Allow"),
-                                onPressed: (){
-                                  Navigator.of(context).pop();
-                                  PermissionRequest.openSetting();
-                                }
-                            )
-                          ],
-                        );
-                      }
-                  );
-                });
+              Container(height: 10.0,),
+              MaterialButton(
+                  child: Text(
+                      "Request Storage Permission"
+                  ),
+                  onPressed: () async {
+                    _isAllow = await PermissionRequest.request(context, PermissionRequestType.CAMERA, (){
+                      showDialog(
+                          context: context,
+                          builder: (_){
+                            return AlertDialog(
+                              title: Text("Allowed to access"),
+                              content: Text("Select Settings to App Information, select (Permissions), enable access and re-enter this screen to use Storage"),
+                              actions: [
+                                TextButton(
+                                    child: Text("Allow"),
+                                    onPressed: (){
+                                      Navigator.of(context).pop();
+                                      PermissionRequest.openSetting();
+                                    }
+                                )
+                              ],
+                            );
+                          }
+                      );
+                    });
 
-                setState(() {
+                    setState(() {
 
-                });
-              }
+                    });
+                  }
+              )
+            ],
           )
-      ),
+        ],
+      )
     );
   }
 }
