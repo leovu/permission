@@ -14,44 +14,80 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
-
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    try {
-      platformVersion = await Permission.platformVersion;
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-        ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
-        ),
+      debugShowCheckedModeBanner: false,
+      home: HomeScreen(),
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  @override
+  HomeScreenState createState() => HomeScreenState();
+}
+
+class HomeScreenState extends State<HomeScreen> {
+
+  bool _isAllow = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Plugin example app'),
+      ),
+      body: Center(
+          child: _isAllow?Text("Allowed Storage Permission"):MaterialButton(
+              child: Text(
+                  "Request Storage Permission"
+              ),
+              onPressed: () async {
+                _isAllow = await PermissionRequest.request(context, PermissionRequestType.STORAGE, (){
+                  showDialog(
+                      context: context,
+                      builder: (_){
+                        return AlertDialog(
+                          title: Text("Allowed to access"),
+                          content: Text("Select Settings to App Information, select (Permissions), enable access and re-enter this screen to use Storage"),
+                          actions: [
+                            TextButton(
+                                child: Text("Allow"),
+                                onPressed: (){
+                                  Navigator.of(context).pop();
+                                  PermissionRequest.openSetting();
+                                }
+                            )
+                          ],
+                        );
+                      }
+                  );
+                });
+
+                setState(() {
+
+                });
+              }
+          )
       ),
     );
   }
