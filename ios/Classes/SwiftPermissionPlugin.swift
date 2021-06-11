@@ -29,6 +29,11 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                                 self.result = nil
                             })
                         }
+                        else {
+                            UIApplication.shared.openURL(url)
+                            self.result?(-1)
+                            self.result = nil
+                        }
                       }
                       else {
                         self.result?(-1)
