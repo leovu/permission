@@ -60,17 +60,17 @@ class HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
-              child: Text("${_isAllow?"Allowed":"Not allow"} Storage Permission")
+              child: Text("${_isAllow?"Allowed":"Not allow"} Camera Permission")
           ),
           Container(height: 10.0,),
           _isAllow?Container():Column(
             children: [
               MaterialButton(
                   child: Text(
-                      "Check Storage Permission"
+                      "Check Camera Permission"
                   ),
                   onPressed: () async {
-                    _isAllow = await PermissionRequest.check(PermissionRequestType.STORAGE);
+                    _isAllow = await PermissionRequest.check(PermissionRequestType.CAMERA);
 
                     setState(() {
 
@@ -83,7 +83,7 @@ class HomeScreenState extends State<HomeScreen> {
                       "Request Storage Permission"
                   ),
                   onPressed: () async {
-                    _isAllow = await PermissionRequest.request(context, PermissionRequestType.STORAGE, (){
+                    _isAllow = await PermissionRequest.request(context, PermissionRequestType.CAMERA, (){
                       showDialog(
                           context: context,
                           builder: (_){
