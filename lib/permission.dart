@@ -18,7 +18,7 @@ class PermissionRequest {
     _channel.invokeMethod(_openScreenType);
   }
 
-  static Future<bool> request(BuildContext context, PermissionRequestType type, Function onDontAskAgain) async {
+  static Future<bool> request(PermissionRequestType type, {Function onDontAskAgain}) async {
 
     bool event = false;
     int result = 0;
@@ -43,8 +43,11 @@ class PermissionRequest {
     }
     catch(_){}
 
-    if(result == -1)
-      onDontAskAgain();
+    if(result == -1){
+      if(onDontAskAgain != null){
+        onDontAskAgain();
+      }
+    }
     else if(result == 1)
       event = true;
 
