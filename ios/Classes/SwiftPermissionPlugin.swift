@@ -4,49 +4,22 @@ import CoreLocation
 import AVFoundation
 
 public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
+    let _channel = "flutter.io/permission";
+      let _cameraType = "camera";
+      let _locationType = "location";
+      let _recordType = "record_audio";
+      let _openScreenType = "open_screen";
+      let _actionArgKey = "action";
+      let _requestArgValue = "request";
+    
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channelRequest = FlutterMethodChannel(name: "flutter.io/requestPermission",
-                                               binaryMessenger: registrar.messenger())
-    let channelCheck = FlutterMethodChannel(name: "flutter.io/checkPermission",
-                                               binaryMessenger: registrar.messenger())
-    
-    channelCheck.setMethodCallHandler({
-                [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
-                if call.method == "open_screen" {
-                    Permission.shared.pendingResultOpenScreen = result
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url, options: [:], completionHandler: { _ in
-                            Permission.shared.pendingResultOpenScreen?(1)
-                            Permission.shared.pendingResultOpenScreen = nil
-                        })
-                    }
-                    else {
-                        Permission.shared.pendingResultOpenScreen?(-1)
-                        Permission.shared.pendingResultOpenScreen = nil
-                    }
-                }
-                else if call.method == "camera" || call.method == "location" || call.method == "record_audio"  {
-                    if call.method == "camera" {
-                        Permission.shared.pendingResultCamera = result
-                        self?.requestPermission(result: result, type: .camera, isRequest: false)
-                    }
-                    else if call.method == "location" {
-                        Permission.shared.pendingResultLocation = result
-                        self?.requestPermission(result: result, type: .location, isRequest: false)
-                    }
-                    else if call.method == "record_audio" {
-                        Permission.shared.pendingResultRecordAudio = result
-                        self?.requestPermission(result: result, type: .record_audio, isRequest: false)
-                    }
-                }
-            })
-    
+    let channel = FlutterMethodChannel(name: _channel, binaryMessenger: registrar.messenger())
     let instance = SwiftPermissionPlugin()
     registrar.addMethodCallDelegate(instance, channel: channelRequest)
   }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-      if call.method == "open_screen" {
+      if call.method == _openScreenType {
                       Permission.shared.pendingResultOpenScreen = result
                       if let url = URL(string: UIApplication.openSettingsURLString) {
                           UIApplication.shared.open(url, options: [:], completionHandler: { _ in
@@ -59,18 +32,41 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                           Permission.shared.pendingResultOpenScreen = nil
                       }
                   }
-                  else if call.method == "camera" || call.method == "location" || call.method == "record_audio"  {
-                      if call.method == "camera" {
-                          Permission.shared.pendingResultCamera = result
-                          self?.requestPermission(result: result, type: .camera, isRequest: true)
+                  else {
+                    guard let args:[String: Any] = (call.arguments as? [String: Any]) else {
+                                result(FlutterError(code: "400", message:  "Bad arguments", details: "iOS could not recognize flutter arguments in method: (start)") )
+                                return
+                            }
+                            let action:String = args[_actionArgKey] as! String
+                      if call.method == _cameraType {
+                        if(action == _requestArgValue){
+                            Permission.shared.pendingResultCamera = result
+                            self?.requestPermission(result: result, type: .camera, isRequest: true)
+                        }
+                        else{
+                            Permission.shared.pendingResultCamera = result
+                            self?.requestPermission(result: result, type: .camera, isRequest: false)
+                        }
                       }
-                      else if call.method == "location" {
-                          Permission.shared.pendingResultLocation = result
-                          self?.requestPermission(result: result, type: .location, isRequest: true)
+                      else if call.method == _locationType {
+                        if(action == _requestArgValue){
+                            Permission.shared.pendingResultLocation = result
+                            self?.requestPermission(result: result, type: .location, isRequest: true)
+                        }
+                        else{
+                            Permission.shared.pendingResultLocation = result
+                            self?.requestPermission(result: result, type: .location, isRequest: false)
+                        }
                       }
-                      else if call.method == "record_audio" {
-                          Permission.shared.pendingResultRecordAudio = result
-                          self?.requestPermission(result: result, type: .record_audio, isRequest: true)
+                      else if call.method == _recordType {
+                        if(action == _requestArgValue){
+                            Permission.shared.pendingResultRecordAudio = result
+                            self?.requestPermission(result: result, type: .record_audio, isRequest: true)
+                        }
+                        else{
+                            Permission.shared.pendingResultRecordAudio = result
+                            self?.requestPermission(result: result, type: .record_audio, isRequest: false)
+                        }
                       }
                   }
     }
