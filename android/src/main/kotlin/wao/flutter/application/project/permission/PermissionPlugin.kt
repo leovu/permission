@@ -29,7 +29,14 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
   private val REQUEST_CAMERA_PERMISSION = 101
   private val REQUEST_LOCATION_PERMISSION = 102
   private val REQUEST_STORAGE_PERMISSION = 104
-  private val RequestPermissionChannel = "flutter.io/requestPermission"
+  private val PERMISSION_CHANNEL = "flutter.io/permission"
+  private val CAMERA_TYPE = "camera"
+  private val LOCATION_TYPE = "location"
+  private val STORAGE_TYPE = "storage"
+  private val RECORD_TYPE = "record_audio"
+  private val OPEN_SCREEN_TYPE = "open_screen"
+  private val ACTION_ARG_KEY = "action"
+  private val REQUEST_ARG_VALUE = "request"
 
   private lateinit var pendingResult: Result
 
@@ -37,26 +44,49 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
 
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(flutterPluginBinding.binaryMessenger, RequestPermissionChannel)
+    channel = MethodChannel(flutterPluginBinding.binaryMessenger, PERMISSION_CHANNEL)
     channel.setMethodCallHandler(this)
   }
 
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     pendingResult = result
     when (call.method) {
-      "open_screen" -> {
+      OPEN_SCREEN_TYPE -> {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
         intent.data = Uri.parse("package:${currentActivity.packageName}")
         currentActivity.startActivityForResult(intent, REQUEST_PERMISSION)
       }
-      "camera" -> {
-        handlePermission(result, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+      CAMERA_TYPE -> {
+        if((call.arguments as Map<*, *>)[ACTION_ARG_KEY]!! == REQUEST_ARG_VALUE){
+          handlePermission(result, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+        }
+        else{
+          handlePermission(result, arrayOf(Manifest.permission.CAMERA), 0)
+        }
       }
-      "location" -> {
-        handlePermission(result, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
+      LOCATION_TYPE -> {
+        if((call.arguments as Map<*, *>)[ACTION_ARG_KEY]!! == REQUEST_ARG_VALUE){
+          handlePermission(result, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
+        }
+        else{
+          handlePermission(result, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), 0)
+        }
       }
-      "storage" -> {
-        handlePermission(result, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_STORAGE_PERMISSION)
+      STORAGE_TYPE -> {
+        if((call.arguments as Map<*, *>)[ACTION_ARG_KEY]!! == REQUEST_ARG_VALUE){
+          handlePermission(result, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_STORAGE_PERMISSION)
+        }
+        else{
+          handlePermission(result, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), 0)
+        }
+      }
+      RECORD_TYPE -> {
+        if((call.arguments as Map<*, *>)[ACTION_ARG_KEY]!! == REQUEST_ARG_VALUE){
+          handlePermission(result, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_STORAGE_PERMISSION)
+        }
+        else{
+          handlePermission(result, arrayOf(Manifest.permission.RECORD_AUDIO), 0)
+        }
       }
     }
   }
