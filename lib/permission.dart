@@ -20,11 +20,7 @@ class PermissionRequest {
         result = await channel.invokeMethod<int>('location');
       }
       else if(type == PermissionRequestType.STORAGE){
-        if(Platform.isAndroid){
-          result = await channel.invokeMethod<int>('storage');
-        }
-        else
-          result = 1;
+        result = await channel.invokeMethod<int>('storage');
       }
     }
     catch(_){}
