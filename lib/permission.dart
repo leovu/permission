@@ -10,7 +10,7 @@ class PermissionRequest {
   static Future<bool> request(PermissionRequestType type, Function onDontAskAgain) async {
     final channel = MethodChannel("flutter.io/requestPermission");
     bool event = false;
-    int result = 0;
+    int? result = 0;
 
     try{
       if(type == PermissionRequestType.CAMERA){
@@ -39,7 +39,7 @@ class PermissionRequest {
 
   static Future<bool> check(PermissionRequestType type) async {
     final channel = MethodChannel("flutter.io/checkPermission");
-    int result = 0;
+    int? result = 0;
     try{
       if(type == PermissionRequestType.CAMERA){
         result = await channel.invokeMethod<int>('camera');
