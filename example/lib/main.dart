@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:permission/permission.dart';
 
 void main() {
@@ -62,7 +60,7 @@ class HomeScreenState extends State<HomeScreen> {
                   "Request Storage Permission"
               ),
               onPressed: () async {
-                _isAllow = await PermissionRequest.request(context, PermissionRequestType.STORAGE, (){
+                _isAllow = await PermissionRequest.request(PermissionRequestType.STORAGE, (){
                   showDialog(
                       context: context,
                       builder: (_){

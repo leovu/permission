@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class PermissionRequest {
@@ -8,7 +7,7 @@ class PermissionRequest {
     MethodChannel("flutter.io/requestPermission").invokeMethod('open_screen');
   }
 
-  static Future<bool> request(BuildContext context, PermissionRequestType type, Function onDontAskAgain) async {
+  static Future<bool> request(PermissionRequestType type, Function onDontAskAgain) async {
     final channel = MethodChannel("flutter.io/requestPermission");
     bool event = false;
     int result = 0;
