@@ -178,7 +178,7 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                         Permission.shared.pendingResultOpenScreen = nil
                       }
                   }
-                  else if call.method == "camera" || call.method == "location" || call.method == "record_audio"  {
+                  else if call.method == "camera" || call.method == "location" || call.method == "record_audio" || call.method == "storage"{
                       if call.method == "camera" {
                         Permission.shared.pendingResultCamera = result
                         Permission.shared.requestPermission(result: result, type: .camera, isRequest: true)
