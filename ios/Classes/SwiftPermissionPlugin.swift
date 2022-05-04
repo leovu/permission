@@ -152,9 +152,9 @@ class Permission {
 
 public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    let channelRequest = FlutterMethodChannel(name: "flutter.io/requestPermission",
+    let channelRequest = FlutterMethodChannel(name: "flutter.permission/requestPermission",
                                                binaryMessenger: registrar.messenger())
-    let channelCheck = FlutterMethodChannel(name: "flutter.io/checkPermission",
+    let channelCheck = FlutterMethodChannel(name: "flutter.permission/checkPermission",
                                                binaryMessenger: registrar.messenger())
     let instance = SwiftPermissionPlugin()
     registrar.addMethodCallDelegate(instance, channel: channelRequest)

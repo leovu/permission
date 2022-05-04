@@ -29,7 +29,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
   private val REQUEST_CAMERA_PERMISSION = 101
   private val REQUEST_LOCATION_PERMISSION = 102
   private val REQUEST_STORAGE_PERMISSION = 104
-  private val RequestPermissionChannel = "flutter.io/requestPermission"
+  private val RequestPermissionChannel = "flutter.permission/requestPermission"
 
   private lateinit var pendingResult: Result
 

@@ -4,11 +4,11 @@ import 'package:flutter/services.dart';
 
 class PermissionRequest {
   static openSetting() {
-    MethodChannel("flutter.io/requestPermission").invokeMethod('open_screen');
+    MethodChannel("flutter.permission/requestPermission").invokeMethod('open_screen');
   }
 
   static Future<bool> request(PermissionRequestType type, Function onDontAskAgain) async {
-    final channel = MethodChannel("flutter.io/requestPermission");
+    final channel = MethodChannel("flutter.permission/requestPermission");
     bool event = false;
     int? result = 0;
 
@@ -34,7 +34,7 @@ class PermissionRequest {
   }
 
   static Future<bool> check(PermissionRequestType type) async {
-    final channel = MethodChannel("flutter.io/checkPermission");
+    final channel = MethodChannel("flutter.permission/checkPermission");
     int? result = 0;
     try{
       if(type == PermissionRequestType.CAMERA){
