@@ -130,20 +130,26 @@ class Permission {
         }
 
         func checkLocationPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
+            let locationManager = CLLocationManager()
             if CLLocationManager.locationServicesEnabled() {
                 switch CLLocationManager.authorizationStatus() {
                 case .restricted, .denied:
                         self.pendingResultLocation?(-1)
                         self.pendingResultLocation = nil
                     case .authorizedAlways, .authorizedWhenInUse:
+                        locationManager.startUpdatingLocation()
                         self.pendingResultLocation?(1)
                         self.pendingResultLocation = nil
                     default:
+                        if(isRequest) {
+                            locationManager.requestWhenInUseAuthorization()
+                        }
                         self.pendingResultLocation?(0)
                         self.pendingResultLocation = nil
                     break
                 }
                 } else {
+                    locationManager.startUpdatingLocation()
                     self.pendingResultLocation?(0)
                     self.pendingResultLocation = nil
             }
