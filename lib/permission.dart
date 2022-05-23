@@ -14,13 +14,13 @@ class PermissionRequest {
 
     try{
       if(type == PermissionRequestType.CAMERA){
-        result = await channel.invokeMethod<int>('camera');
+        result = await channel.invokeMethod<int>('camera',{'isRequest':true});
       }
       else if(type == PermissionRequestType.LOCATION){
-        result = await channel.invokeMethod<int>('location');
+        result = await channel.invokeMethod<int>('location',{'isRequest':true});
       }
       else if(type == PermissionRequestType.STORAGE){
-        result = await channel.invokeMethod<int>('storage');
+        result = await channel.invokeMethod<int>('storage',{'isRequest':true});
       }
     }
     catch(_){}
@@ -38,13 +38,13 @@ class PermissionRequest {
     int? result = 0;
     try{
       if(type == PermissionRequestType.CAMERA){
-        result = await channel.invokeMethod<int>('camera');
+        result = await channel.invokeMethod<int>('camera',{'isRequest':false});
       }
       else if(type == PermissionRequestType.LOCATION){
-        result = await channel.invokeMethod<int>('location');
+        result = await channel.invokeMethod<int>('location',{'isRequest':false});
       }
       else if(type == PermissionRequestType.STORAGE){
-        result = await channel.invokeMethod<int>('storage');
+        result = await channel.invokeMethod<int>('storage',{'isRequest':false});
       }
     }
     catch(_){}

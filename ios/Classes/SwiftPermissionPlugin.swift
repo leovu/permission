@@ -185,22 +185,24 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                       }
                   }
                   else if call.method == "camera" || call.method == "location" || call.method == "record_audio" || call.method == "storage"{
+                      guard let dictionary = call.arguments as? [String: Any],
+                            let isRequest = dictionary ["isRequest"] as? Bool else { return }
                       if call.method == "camera" {
                         Permission.shared.pendingResultCamera = result
-                        Permission.shared.requestPermission(result: result, type: .camera, isRequest: true)
+                          Permission.shared.requestPermission(result: result, type: .camera, isRequest: isRequest)
                       }
                         else if call.method == "storage" {
                           Permission.shared.pendingResultStorage = result
-                          Permission.shared.requestPermission(result: result, type: .storage, isRequest: true)
+                          Permission.shared.requestPermission(result: result, type: .storage, isRequest: isRequest)
                         }
                       else if call.method == "location" {
                         Permission.shared.pendingResultLocation = result
-                        Permission.shared.requestPermission(result: result, type: .location, isRequest: true)
+                        Permission.shared.requestPermission(result: result, type: .location, isRequest: isRequest)
                       }
                       else if call.method == "record_audio" {
                         Permission.shared.pendingResultRecordAudio = result
-                        Permission.shared.requestPermission(result: result, type: .record_audio, isRequest: true)
+                        Permission.shared.requestPermission(result: result, type: .record_audio, isRequest: isRequest)
                       }
-                  }
+                }
     }
 }
