@@ -55,12 +55,12 @@ class HomeScreenState extends State<HomeScreen> {
         title: const Text('Plugin example app'),
       ),
       body: Center(
-          child: _isAllow?Text("Allowed Storage Permission"):MaterialButton(
+          child: _isAllow?Text("Allowed Location Permission"):MaterialButton(
               child: Text(
-                  "Request Storage Permission"
+                  "Request Location Permission"
               ),
               onPressed: () async {
-                _isAllow = await PermissionRequest.request(PermissionRequestType.STORAGE, (){
+                _isAllow = await PermissionRequest.request(PermissionRequestType.LOCATION, (){
                   showDialog(
                       context: context,
                       builder: (_){
@@ -80,10 +80,7 @@ class HomeScreenState extends State<HomeScreen> {
                       }
                   );
                 });
-
-                setState(() {
-
-                });
+                setState(() {});
               }
           )
       ),

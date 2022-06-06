@@ -14,6 +14,7 @@ enum AppPermission
 
 class Permission {
     static let shared = Permission()
+    let getLocation = GetLocation()
     var pendingResultCamera:FlutterResult?
     var pendingResultLocation:FlutterResult?
     var pendingResultRecordAudio:FlutterResult?
@@ -134,8 +135,7 @@ class Permission {
             permission(isRequest: false)
         }
         else {
-            let getLocation = GetLocation()
-            getLocation.run { location in
+            Permission.shared.getLocation.run { location in
                 if location != nil {
                     self.pendingResultLocation?(1)
                     self.pendingResultLocation = nil
@@ -153,8 +153,7 @@ class Permission {
                     self.pendingResultLocation?(-1)
                     self.pendingResultLocation = nil
             case .authorizedAlways, .authorizedWhenInUse , .authorized:
-                    let getLocation = GetLocation()
-                    getLocation.run { location in
+                Permission.shared.getLocation.run { location in
                         if location != nil {
                             self.pendingResultLocation?(1)
                             self.pendingResultLocation = nil
@@ -244,11 +243,15 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
 }
 
 public class GetLocation: NSObject, CLLocationManagerDelegate {
-    let manager = CLLocationManager()
+    var manager:CLLocationManager!
     private var handler: ((CLLocation?) -> Void)?
     var locationServicesEnabled = false
     var didFailWithError: Error?
 
+    override init() {
+        manager = CLLocationManager()
+    }
+    
     public func run(handler: @escaping (CLLocation?) -> Void) {
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
