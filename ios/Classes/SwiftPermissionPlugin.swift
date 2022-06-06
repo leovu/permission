@@ -276,6 +276,20 @@ public class GetLocation: NSObject, CLLocationManagerDelegate {
         self.handler!(nil)
         manager.stopUpdatingLocation()
     }
+    
+    public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if #available(iOS 14.0, *) {
+            if manager.authorizationStatus == .denied {
+                self.handler!(nil)
+            }
+        }
+    }
+    
+    public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if status == .denied {
+            self.handler!(nil)
+        }
+    }
 
     deinit {
         manager.stopUpdatingLocation()
