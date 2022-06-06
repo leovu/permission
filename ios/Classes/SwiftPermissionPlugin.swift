@@ -159,7 +159,7 @@ class Permission {
                             self.pendingResultLocation = nil
                         }
                         else {
-                            self.pendingResultLocation?(0)
+                            self.pendingResultLocation?(-1)
                             self.pendingResultLocation = nil
                         }
                     }
@@ -172,20 +172,20 @@ class Permission {
                                 self.pendingResultLocation = nil
                             }
                             else {
-                                self.pendingResultLocation?(0)
+                                self.pendingResultLocation?(-1)
                                 self.pendingResultLocation = nil
                             }
                         }
                     }
                     else {
-                        self.pendingResultLocation?(0)
+                        self.pendingResultLocation?(-1)
                         self.pendingResultLocation = nil
                     }
                 break
             }
         }
         else {
-            self.pendingResultLocation?(0)
+            self.pendingResultLocation?(-1)
             self.pendingResultLocation = nil
         }
     }
