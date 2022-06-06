@@ -129,31 +129,67 @@ class Permission {
                 }
         }
 
-        func checkLocationPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
-            let locationManager = CLLocationManager()
-            if CLLocationManager.locationServicesEnabled() {
-                switch CLLocationManager.authorizationStatus() {
-                case .restricted, .denied:
-                        self.pendingResultLocation?(-1)
-                        self.pendingResultLocation = nil
-                    case .authorizedAlways, .authorizedWhenInUse:
-                        locationManager.startUpdatingLocation()
-                        self.pendingResultLocation?(1)
-                        self.pendingResultLocation = nil
-                    default:
-                        if(isRequest) {
-                            locationManager.requestWhenInUseAuthorization()
-                        }
-                        self.pendingResultLocation?(0)
-                        self.pendingResultLocation = nil
-                    break
-                }
-                } else {
-                    locationManager.startUpdatingLocation()
-                    self.pendingResultLocation?(0)
+    func checkLocationPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
+        if(!isRequest) {
+            permission(isRequest: false)
+        }
+        else {
+            let getLocation = GetLocation()
+            getLocation.run { location in
+                if location != nil {
+                    self.pendingResultLocation?(1)
                     self.pendingResultLocation = nil
+                }
+                else {
+                    self.permission(isRequest: true)
+                }
             }
         }
+    }
+    func permission(isRequest:Bool) {
+        if CLLocationManager.locationServicesEnabled() {
+            switch CLLocationManager.authorizationStatus() {
+            case .restricted, .denied:
+                    self.pendingResultLocation?(-1)
+                    self.pendingResultLocation = nil
+            case .authorizedAlways, .authorizedWhenInUse , .authorized:
+                    let getLocation = GetLocation()
+                    getLocation.run { location in
+                        if location != nil {
+                            self.pendingResultLocation?(1)
+                            self.pendingResultLocation = nil
+                        }
+                        else {
+                            self.pendingResultLocation?(-1)
+                            self.pendingResultLocation = nil
+                        }
+                    }
+            default:
+                    if(isRequest) {
+                        let getLocation = GetLocation()
+                        getLocation.run { location in
+                            if location != nil {
+                                self.pendingResultLocation?(1)
+                                self.pendingResultLocation = nil
+                            }
+                            else {
+                                self.pendingResultLocation?(-1)
+                                self.pendingResultLocation = nil
+                            }
+                        }
+                    }
+                    else {
+                        self.pendingResultLocation?(0)
+                        self.pendingResultLocation = nil
+                    }
+                break
+            }
+        }
+        else {
+            self.pendingResultLocation?(0)
+            self.pendingResultLocation = nil
+        }
+    }
 }
 
 public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
@@ -204,5 +240,41 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                         Permission.shared.requestPermission(result: result, type: .record_audio, isRequest: isRequest)
                       }
                 }
+    }
+}
+
+public class GetLocation: NSObject, CLLocationManagerDelegate {
+    let manager = CLLocationManager()
+    private var handler: ((CLLocation?) -> Void)?
+    var locationServicesEnabled = false
+    var didFailWithError: Error?
+
+    public func run(handler: @escaping (CLLocation?) -> Void) {
+        manager.delegate = self
+        manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        manager.requestLocation()
+        manager.requestWhenInUseAuthorization()
+        manager.requestAlwaysAuthorization()
+        locationServicesEnabled = CLLocationManager.locationServicesEnabled()
+        if locationServicesEnabled {
+            manager.startUpdatingLocation()
+        }
+        self.handler = handler
+    }
+
+   public func locationManager(_ manager: CLLocationManager,
+                         didUpdateLocations locations: [CLLocation]) {
+        self.handler!(locations.last!)
+        manager.stopUpdatingLocation()
+    }
+
+    public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        didFailWithError = error
+        self.handler!(nil)
+        manager.stopUpdatingLocation()
+    }
+
+    deinit {
+        manager.stopUpdatingLocation()
     }
 }
