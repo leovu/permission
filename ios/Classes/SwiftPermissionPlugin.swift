@@ -150,7 +150,7 @@ class Permission {
         if CLLocationManager.locationServicesEnabled() {
             switch CLLocationManager.authorizationStatus() {
             case .restricted, .denied:
-                    self.pendingResultLocation?(-1)
+                    self.pendingResultLocation?(0)
                     self.pendingResultLocation = nil
             case .authorizedAlways, .authorizedWhenInUse , .authorized:
                 Permission.shared.getLocation.run { location in
@@ -159,7 +159,7 @@ class Permission {
                             self.pendingResultLocation = nil
                         }
                         else {
-                            self.pendingResultLocation?(-1)
+                            self.pendingResultLocation?(0)
                             self.pendingResultLocation = nil
                         }
                     }
@@ -172,7 +172,7 @@ class Permission {
                                 self.pendingResultLocation = nil
                             }
                             else {
-                                self.pendingResultLocation?(-1)
+                                self.pendingResultLocation?(0)
                                 self.pendingResultLocation = nil
                             }
                         }
