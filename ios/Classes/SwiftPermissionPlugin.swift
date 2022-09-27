@@ -141,19 +141,33 @@ class Permission {
                     self.pendingResultLocation = nil
                 }
                 else {
-                    self.permission(isRequest: true)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                        self.permission(isRequest: true)
+                    }
                 }
             }
         }
     }
     func permission(isRequest:Bool) {
-        if CLLocationManager.locationServicesEnabled() {
-            switch CLLocationManager.authorizationStatus() {
-            case .restricted, .denied:
-                    self.pendingResultLocation?(-1)
-                    self.pendingResultLocation = nil
-            case .authorizedAlways, .authorizedWhenInUse , .authorized:
-                Permission.shared.getLocation.run { location in
+        switch CLLocationManager.authorizationStatus() {
+        case .restricted, .denied:
+                self.pendingResultLocation?(-1)
+                self.pendingResultLocation = nil
+        case .authorizedAlways, .authorizedWhenInUse , .authorized:
+            Permission.shared.getLocation.run { location in
+                    if location != nil {
+                        self.pendingResultLocation?(1)
+                        self.pendingResultLocation = nil
+                    }
+                    else {
+                        self.pendingResultLocation?(-1)
+                        self.pendingResultLocation = nil
+                    }
+                }
+        default:
+                if(isRequest) {
+                    let getLocation = GetLocation()
+                    getLocation.run { location in
                         if location != nil {
                             self.pendingResultLocation?(1)
                             self.pendingResultLocation = nil
@@ -163,30 +177,12 @@ class Permission {
                             self.pendingResultLocation = nil
                         }
                     }
-            default:
-                    if(isRequest) {
-                        let getLocation = GetLocation()
-                        getLocation.run { location in
-                            if location != nil {
-                                self.pendingResultLocation?(1)
-                                self.pendingResultLocation = nil
-                            }
-                            else {
-                                self.pendingResultLocation?(-1)
-                                self.pendingResultLocation = nil
-                            }
-                        }
-                    }
-                    else {
-                        self.pendingResultLocation?(-1)
-                        self.pendingResultLocation = nil
-                    }
-                break
-            }
-        }
-        else {
-            self.pendingResultLocation?(-1)
-            self.pendingResultLocation = nil
+                }
+                else {
+                    self.pendingResultLocation?(-1)
+                    self.pendingResultLocation = nil
+                }
+            break
         }
     }
 }
