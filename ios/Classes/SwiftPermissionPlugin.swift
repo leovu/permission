@@ -10,6 +10,7 @@ enum AppPermission
    case location
    case record_audio
    case storage
+   case notification
 }
 
 class Permission {
@@ -20,6 +21,7 @@ class Permission {
     var pendingResultRecordAudio:FlutterResult?
     var pendingResultOpenScreen:FlutterResult?
     var pendingResultStorage:FlutterResult?
+    var pendingResultNotification:FlutterResult?
     
     func requestPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
             if type == .location {
@@ -34,8 +36,45 @@ class Permission {
             else if type == .record_audio {
                 self.checkMicrophonePermission(result: result, type: type, isRequest: isRequest)
             }
+            else if type == .notification {
+                self.checkNotificationPermission(result: result, type: type, isRequest: isRequest)
+            }
         }
-
+    
+        func checkNotificationPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
+            UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+                if settings.authorizationStatus == .notDetermined {
+                    if(isRequest) {
+                        let center  = UNUserNotificationCenter.current()
+                        center.requestAuthorization(options: [.sound, .alert, .badge]) { (granted, error) in
+                            if error == nil{
+                                UIApplication.shared.registerForRemoteNotifications()
+                            }
+                            if granted {
+                                self.pendingResultNotification?(1)
+                                self.pendingResultNotification = nil
+                            }
+                            else {
+                                self.pendingResultNotification?(0)
+                                self.pendingResultNotification = nil
+                            }
+                        }
+                    }
+                    else {
+                        self.pendingResultNotification?(0)
+                        self.pendingResultNotification = nil
+                    }
+                }
+                else if settings.authorizationStatus == .denied {
+                    self.pendingResultNotification?(-1)
+                    self.pendingResultNotification = nil
+                }
+                else {
+                    self.pendingResultNotification?(1)
+                    self.pendingResultNotification = nil
+                }
+            }
+        }
 
         func checkMicrophonePermission(result: FlutterResult,type:AppPermission,isRequest:Bool){
             switch AVAudioSession.sharedInstance().recordPermission {
@@ -233,6 +272,10 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                       else if call.method == "record_audio" {
                         Permission.shared.pendingResultRecordAudio = result
                         Permission.shared.requestPermission(result: result, type: .record_audio, isRequest: isRequest)
+                      }
+                      else if call.method == "notification" {
+                        Permission.shared.pendingResultNotification = result
+                        Permission.shared.requestPermission(result: result, type: .notification, isRequest: isRequest)
                       }
                 }
     }

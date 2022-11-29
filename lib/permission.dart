@@ -22,6 +22,9 @@ class PermissionRequest {
       else if(type == PermissionRequestType.STORAGE){
         result = await channel.invokeMethod<int>('storage',{'isRequest':true});
       }
+      else if(type == PermissionRequestType.NOTIFICATION){
+        result = await channel.invokeMethod<int>('notification',{'isRequest':true});
+      }
     }
     catch(_){}
 
@@ -46,6 +49,9 @@ class PermissionRequest {
       else if(type == PermissionRequestType.STORAGE){
         result = await channel.invokeMethod<int>('storage',{'isRequest':false});
       }
+      else if(type == PermissionRequestType.NOTIFICATION){
+        result = await channel.invokeMethod<int>('notification',{'isRequest':false});
+      }
     }
     catch(_){}
 
@@ -54,5 +60,5 @@ class PermissionRequest {
 }
 
 enum PermissionRequestType{
-  CAMERA, LOCATION, STORAGE
+  CAMERA, LOCATION, STORAGE, NOTIFICATION
 }

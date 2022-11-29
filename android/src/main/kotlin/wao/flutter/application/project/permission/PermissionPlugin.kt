@@ -2,12 +2,16 @@ package wao.flutter.application.project.permission
 
 import android.Manifest
 import android.app.Activity
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.annotation.NonNull
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -29,15 +33,17 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
   private val REQUEST_CAMERA_PERMISSION = 101
   private val REQUEST_LOCATION_PERMISSION = 102
   private val REQUEST_STORAGE_PERMISSION = 104
+  private val REQUEST_NOTIFICATION_PERMISSION = 105
   private val RequestPermissionChannel = "flutter.permission/requestPermission"
 
   private lateinit var pendingResult: Result
-
+  private lateinit var context: Context
   private lateinit var currentActivity: Activity
 
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     channel = MethodChannel(flutterPluginBinding.binaryMessenger, RequestPermissionChannel)
+    context = flutterPluginBinding.applicationContext
     channel.setMethodCallHandler(this)
   }
 
@@ -57,6 +63,13 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
       }
       "storage" -> {
         handlePermission(result, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_STORAGE_PERMISSION)
+      }
+      "notification" -> {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED)
+          result.success(1)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          handlePermission(result, arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY), REQUEST_NOTIFICATION_PERMISSION)
+        }
       }
     }
   }
