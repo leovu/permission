@@ -60,7 +60,7 @@ class HomeScreenState extends State<HomeScreen> {
                   "Request Location Permission"
               ),
               onPressed: () async {
-                _isAllow = await PermissionRequest.request(PermissionRequestType.LOCATION, (){
+                _isAllow = await PermissionRequest.request(PermissionRequestType.MICROPHONE, (){
                   showDialog(
                       context: context,
                       builder: (_){

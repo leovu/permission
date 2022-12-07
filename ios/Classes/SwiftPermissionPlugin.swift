@@ -282,7 +282,7 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                         Permission.shared.pendingResultOpenScreen = nil
                       }
                   }
-                  else if call.method == "camera" || call.method == "location" || call.method == "record_audio" || call.method == "storage"{
+                  else {
                       guard let dictionary = call.arguments as? [String: Any],
                             let isRequest = dictionary ["isRequest"] as? Bool else { return }
                       if call.method == "camera" {
