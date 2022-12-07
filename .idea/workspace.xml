@@ -5,10 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="33e35f63-a1b5-49b4-aae2-0062d5906b7f" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/android/src/main/kotlin/wao/flutter/application/project/permission/PermissionPlugin.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android/src/main/kotlin/wao/flutter/application/project/permission/PermissionPlugin.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Podfile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Podfile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ios/Classes/SwiftPermissionPlugin.swift" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Classes/SwiftPermissionPlugin.swift" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/permission.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/permission.dart" afterDir="false" />
     </list>

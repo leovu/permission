@@ -25,6 +25,9 @@ class PermissionRequest {
       else if(type == PermissionRequestType.NOTIFICATION){
         result = await channel.invokeMethod<int>('notification',{'isRequest':true});
       }
+      else if(type == PermissionRequestType.MICROPHONE){
+        result = await channel.invokeMethod<int>('microphone',{'isRequest':true});
+      }
     }
     catch(_){}
 
@@ -52,6 +55,9 @@ class PermissionRequest {
       else if(type == PermissionRequestType.NOTIFICATION){
         result = await channel.invokeMethod<int>('notification',{'isRequest':false});
       }
+      else if(type == PermissionRequestType.MICROPHONE){
+        result = await channel.invokeMethod<int>('microphone',{'isRequest':false});
+      }
     }
     catch(_){}
 
@@ -60,5 +66,5 @@ class PermissionRequest {
 }
 
 enum PermissionRequestType{
-  CAMERA, LOCATION, STORAGE, NOTIFICATION
+  CAMERA, LOCATION, STORAGE, NOTIFICATION, MICROPHONE
 }

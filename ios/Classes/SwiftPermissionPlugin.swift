@@ -11,6 +11,7 @@ enum AppPermission
    case record_audio
    case storage
    case notification
+   case microphone
 }
 
 class Permission {
@@ -22,6 +23,7 @@ class Permission {
     var pendingResultOpenScreen:FlutterResult?
     var pendingResultStorage:FlutterResult?
     var pendingResultNotification:FlutterResult?
+    var pendingResultMicrophone:FlutterResult?
     
     func requestPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
             if type == .location {
@@ -38,6 +40,9 @@ class Permission {
             }
             else if type == .notification {
                 self.checkNotificationPermission(result: result, type: type, isRequest: isRequest)
+            }
+            else if type == .microphone {
+                self.checkMicrophonePermission(result: result, type: type, isRequest: isRequest)
             }
         }
     
@@ -79,33 +84,69 @@ class Permission {
         func checkMicrophonePermission(result: FlutterResult,type:AppPermission,isRequest:Bool){
             switch AVAudioSession.sharedInstance().recordPermission {
             case AVAudioSession.RecordPermission.denied:
-                pendingResultRecordAudio?(-1)
-                pendingResultRecordAudio = nil
+                if pendingResultRecordAudio != nil {
+                    pendingResultRecordAudio?(-1)
+                    pendingResultRecordAudio = nil
+                }
+                if pendingResultMicrophone != nil {
+                    pendingResultMicrophone?(-1)
+                    pendingResultMicrophone = nil
+                }
             case AVAudioSession.RecordPermission.granted:
-                pendingResultRecordAudio?(1)
-                pendingResultRecordAudio = nil
+                if pendingResultRecordAudio != nil {
+                    pendingResultRecordAudio?(-1)
+                    pendingResultRecordAudio = nil
+                }
+                if pendingResultMicrophone != nil {
+                    pendingResultMicrophone?(1)
+                    pendingResultMicrophone = nil
+                }
             default:
                if isRequest {
                 let session: AVAudioSession = AVAudioSession.sharedInstance()
                     if (session.responds(to: #selector(AVAudioSession.requestRecordPermission(_:)))) {
                         AVAudioSession.sharedInstance().requestRecordPermission({(granted: Bool)-> Void in
                             if granted {
-                                self.pendingResultRecordAudio?(1)
-                                self.pendingResultRecordAudio = nil
+                                if self.pendingResultRecordAudio != nil {
+                                    self.pendingResultRecordAudio?(1)
+                                    self.pendingResultRecordAudio = nil
+                                }
+                                if self.pendingResultMicrophone != nil {
+                                    self.pendingResultMicrophone?(1)
+                                    self.pendingResultMicrophone = nil
+                                }
                             } else{
-                                self.pendingResultRecordAudio?(-1)
-                                self.pendingResultRecordAudio = nil
+                                if self.pendingResultRecordAudio != nil {
+                                    self.pendingResultRecordAudio?(-1)
+                                    self.pendingResultRecordAudio = nil
+                                }
+                                if self.pendingResultMicrophone != nil {
+                                    self.pendingResultMicrophone?(1)
+                                    self.pendingResultMicrophone = nil
+                                }
                             }
                         })
                     }
                     else {
-                        self.pendingResultRecordAudio?(0)
-                        self.pendingResultRecordAudio = nil
+                        if self.pendingResultRecordAudio != nil {
+                            self.pendingResultRecordAudio?(0)
+                            self.pendingResultRecordAudio = nil
+                        }
+                        if self.pendingResultMicrophone != nil {
+                            self.pendingResultMicrophone?(0)
+                            self.pendingResultMicrophone = nil
+                        }
                     }
                 }
                 else {
-                    self.pendingResultRecordAudio?(0)
-                    self.pendingResultRecordAudio = nil
+                    if self.pendingResultRecordAudio != nil {
+                        self.pendingResultRecordAudio?(0)
+                        self.pendingResultRecordAudio = nil
+                    }
+                    if self.pendingResultMicrophone != nil {
+                        self.pendingResultMicrophone?(0)
+                        self.pendingResultMicrophone = nil
+                    }
                 }
             }
         }
@@ -276,6 +317,10 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                       else if call.method == "notification" {
                         Permission.shared.pendingResultNotification = result
                         Permission.shared.requestPermission(result: result, type: .notification, isRequest: isRequest)
+                      }
+                      else if call.method == "microphone" {
+                        Permission.shared.pendingResultMicrophone = result
+                        Permission.shared.requestPermission(result: result, type: .microphone, isRequest: isRequest)
                       }
                 }
     }

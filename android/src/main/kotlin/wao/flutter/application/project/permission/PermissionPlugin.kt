@@ -34,6 +34,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
   private val REQUEST_LOCATION_PERMISSION = 102
   private val REQUEST_STORAGE_PERMISSION = 104
   private val REQUEST_NOTIFICATION_PERMISSION = 105
+  private val REQUEST_MICROPHONE_PERMISSION = 106
   private val RequestPermissionChannel = "flutter.permission/requestPermission"
 
   private lateinit var pendingResult: Result
@@ -63,6 +64,9 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
       }
       "storage" -> {
         handlePermission(result, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_STORAGE_PERMISSION)
+      }
+      "microphone" -> {
+        handlePermission(result, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_MICROPHONE_PERMISSION)
       }
       "notification" -> {
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED)
@@ -132,6 +136,14 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
       }
       REQUEST_STORAGE_PERMISSION -> {
         handleRequestPermissionsResult(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), grantResults)
+      }
+      REQUEST_MICROPHONE_PERMISSION -> {
+        handleRequestPermissionsResult(arrayOf(Manifest.permission.RECORD_AUDIO), grantResults)
+      }
+      REQUEST_NOTIFICATION_PERMISSION -> {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+          handleRequestPermissionsResult(arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY), grantResults)
+        }
       }
     }
 
