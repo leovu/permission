@@ -94,7 +94,7 @@ class Permission {
                 }
             case AVAudioSession.RecordPermission.granted:
                 if pendingResultRecordAudio != nil {
-                    pendingResultRecordAudio?(-1)
+                    pendingResultRecordAudio?(1)
                     pendingResultRecordAudio = nil
                 }
                 if pendingResultMicrophone != nil {
@@ -102,41 +102,28 @@ class Permission {
                     pendingResultMicrophone = nil
                 }
             default:
-               if isRequest {
-                let session: AVAudioSession = AVAudioSession.sharedInstance()
-                    if (session.responds(to: #selector(AVAudioSession.requestRecordPermission(_:)))) {
-                        AVAudioSession.sharedInstance().requestRecordPermission({(granted: Bool)-> Void in
-                            if granted {
-                                if self.pendingResultRecordAudio != nil {
-                                    self.pendingResultRecordAudio?(1)
-                                    self.pendingResultRecordAudio = nil
-                                }
-                                if self.pendingResultMicrophone != nil {
-                                    self.pendingResultMicrophone?(1)
-                                    self.pendingResultMicrophone = nil
-                                }
-                            } else{
-                                if self.pendingResultRecordAudio != nil {
-                                    self.pendingResultRecordAudio?(-1)
-                                    self.pendingResultRecordAudio = nil
-                                }
-                                if self.pendingResultMicrophone != nil {
-                                    self.pendingResultMicrophone?(1)
-                                    self.pendingResultMicrophone = nil
-                                }
+                if isRequest {
+                    AVAudioSession.sharedInstance().requestRecordPermission({ (granted) in
+                        if granted {
+                            if self.pendingResultRecordAudio != nil {
+                                self.pendingResultRecordAudio?(1)
+                                self.pendingResultRecordAudio = nil
                             }
-                        })
-                    }
-                    else {
-                        if self.pendingResultRecordAudio != nil {
-                            self.pendingResultRecordAudio?(0)
-                            self.pendingResultRecordAudio = nil
+                            if self.pendingResultMicrophone != nil {
+                                self.pendingResultMicrophone?(1)
+                                self.pendingResultMicrophone = nil
+                            }
+                        } else{
+                            if self.pendingResultRecordAudio != nil {
+                                self.pendingResultRecordAudio?(-1)
+                                self.pendingResultRecordAudio = nil
+                            }
+                            if self.pendingResultMicrophone != nil {
+                                self.pendingResultMicrophone?(-1)
+                                self.pendingResultMicrophone = nil
+                            }
                         }
-                        if self.pendingResultMicrophone != nil {
-                            self.pendingResultMicrophone?(0)
-                            self.pendingResultMicrophone = nil
-                        }
-                    }
+                    })
                 }
                 else {
                     if self.pendingResultRecordAudio != nil {
