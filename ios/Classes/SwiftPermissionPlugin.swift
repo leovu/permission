@@ -215,18 +215,26 @@ class Permission {
             }
         }
     }
+    var isCallingLocationRequest = false
     func permission(isRequest:Bool) {
+        if isCallingLocationRequest {
+            return
+        }
+        isCallingLocationRequest = true
         switch CLLocationManager.authorizationStatus() {
         case .restricted, .denied:
+                self.isCallingLocationRequest = true
                 self.pendingResultLocation?(-1)
                 self.pendingResultLocation = nil
         case .authorizedAlways, .authorizedWhenInUse , .authorized:
             Permission.shared.getLocation.run { location in
                     if location != nil {
+                        self.isCallingLocationRequest = true
                         self.pendingResultLocation?(1)
                         self.pendingResultLocation = nil
                     }
                     else {
+                        self.isCallingLocationRequest = true
                         self.pendingResultLocation?(-1)
                         self.pendingResultLocation = nil
                     }
@@ -236,16 +244,19 @@ class Permission {
                     let getLocation = GetLocation()
                     getLocation.run { location in
                         if location != nil {
+                            self.isCallingLocationRequest = true
                             self.pendingResultLocation?(1)
                             self.pendingResultLocation = nil
                         }
                         else {
+                            self.isCallingLocationRequest = true
                             self.pendingResultLocation?(-1)
                             self.pendingResultLocation = nil
                         }
                     }
                 }
                 else {
+                    self.isCallingLocationRequest = true
                     self.pendingResultLocation?(-1)
                     self.pendingResultLocation = nil
                 }
@@ -329,7 +340,7 @@ public class GetLocation: NSObject, CLLocationManagerDelegate {
         manager.requestLocation()
         manager.requestWhenInUseAuthorization()
         manager.requestAlwaysAuthorization()
-        locationServicesEnabled = CLLocationManager.locationServicesEnabled()
+        self.locationServicesEnabled = CLLocationManager.locationServicesEnabled()
         if locationServicesEnabled {
             manager.startUpdatingLocation()
         }
