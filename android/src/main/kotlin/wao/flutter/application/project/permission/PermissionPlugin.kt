@@ -69,8 +69,11 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
         handlePermission(result, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_MICROPHONE_PERMISSION)
       }
       "notification" -> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-          handlePermission(result, arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY), REQUEST_NOTIFICATION_PERMISSION)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          handlePermission(result, arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATION_PERMISSION)
+        }
+        else {
+          result.success(1)
         }
       }
     }
