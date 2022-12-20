@@ -19,6 +19,9 @@ Add to AndroidManifest.xml
 
     <!-- Permissions options for the `record_audio` group -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    
+    <!-- Permissions options for the `notification` group -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
 
 ## iOS
 
