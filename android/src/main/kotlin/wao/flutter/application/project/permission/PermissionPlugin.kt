@@ -69,8 +69,6 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
         handlePermission(result, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_MICROPHONE_PERMISSION)
       }
       "notification" -> {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_NOTIFICATION_POLICY) == PackageManager.PERMISSION_GRANTED)
-          result.success(1)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
           handlePermission(result, arrayOf(Manifest.permission.ACCESS_NOTIFICATION_POLICY), REQUEST_NOTIFICATION_PERMISSION)
         }
