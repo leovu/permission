@@ -1,6 +1,7 @@
 package wao.flutter.application.project.permission
 
 import android.Manifest
+import android.annotation.TargetApi
 import android.app.Activity
 import android.app.NotificationManager
 import android.content.Context
@@ -48,6 +49,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
     channel.setMethodCallHandler(this)
   }
 
+  @TargetApi(33)
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     pendingResult = result
     when (call.method) {
@@ -63,7 +65,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
         handlePermission(result, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
       }
       "storage" -> {
-        handlePermission(result, arrayOf(Manifest.permission_group.STORAGE), REQUEST_STORAGE_PERMISSION)
+        handlePermission(result, arrayOf(Manifest.permission.READ_MEDIA_IMAGES), REQUEST_STORAGE_PERMISSION)
       }
       "microphone" -> {
         handlePermission(result, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_MICROPHONE_PERMISSION)
