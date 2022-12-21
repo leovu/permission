@@ -63,7 +63,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
         handlePermission(result, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
       }
       "storage" -> {
-        handlePermission(result, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_STORAGE_PERMISSION)
+        handlePermission(result, arrayOf(Manifest.permission_group.STORAGE), REQUEST_STORAGE_PERMISSION)
       }
       "microphone" -> {
         handlePermission(result, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_MICROPHONE_PERMISSION)
