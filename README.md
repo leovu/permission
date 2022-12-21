@@ -4,13 +4,9 @@
 
 Add to AndroidManifest.xml
 
-    <!-- Permissions options for the `images` group -->
+    <!-- Permissions options for the `storage` group -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    
-    <!-- Permissions options for the `video` group -->
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    
-    <!-- Permissions options for the `audio` group -->
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
 
     <!-- Permissions options for the `camera` group -->
