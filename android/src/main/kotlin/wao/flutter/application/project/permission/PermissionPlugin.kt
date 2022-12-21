@@ -65,18 +65,13 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
         handlePermission(result, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
       }
       "storage" -> {
-        handlePermission(result, arrayOf(Manifest.permission.READ_MEDIA_IMAGES), REQUEST_STORAGE_PERMISSION)
+        handlePermission(result, arrayOf(Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO), REQUEST_STORAGE_PERMISSION)
       }
       "microphone" -> {
         handlePermission(result, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_MICROPHONE_PERMISSION)
       }
       "notification" -> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-          handlePermission(result, arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATION_PERMISSION)
-        }
-        else {
-          result.success(1)
-        }
+        handlePermission(result, arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATION_PERMISSION)
       }
     }
   }
@@ -129,6 +124,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
     }
   }
 
+  @TargetApi(33)
   override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray): Boolean {
     when (requestCode) {
       REQUEST_LOCATION_PERMISSION -> {
@@ -138,15 +134,13 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
         handleRequestPermissionsResult(arrayOf(Manifest.permission.CAMERA), grantResults)
       }
       REQUEST_STORAGE_PERMISSION -> {
-        handleRequestPermissionsResult(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), grantResults)
+        handleRequestPermissionsResult(arrayOf(Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO), grantResults)
       }
       REQUEST_MICROPHONE_PERMISSION -> {
         handleRequestPermissionsResult(arrayOf(Manifest.permission.RECORD_AUDIO), grantResults)
       }
       REQUEST_NOTIFICATION_PERMISSION -> {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-          handleRequestPermissionsResult(arrayOf(Manifest.permission.POST_NOTIFICATIONS), grantResults)
-        }
+        handleRequestPermissionsResult(arrayOf(Manifest.permission.POST_NOTIFICATIONS), grantResults)
       }
     }
 
