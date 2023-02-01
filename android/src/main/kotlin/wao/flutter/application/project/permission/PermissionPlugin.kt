@@ -66,7 +66,11 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
       }
       "storage" -> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-          handlePermission(result, arrayOf(Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO), REQUEST_STORAGE_PERMISSION)
+          handlePermission(result, arrayOf(
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.READ_MEDIA_VIDEO,
+            Manifest.permission.READ_MEDIA_AUDIO,
+            Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_STORAGE_PERMISSION)
         }
         else {
           handlePermission(result, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_STORAGE_PERMISSION)
@@ -145,7 +149,12 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
       }
       REQUEST_STORAGE_PERMISSION -> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-          handleRequestPermissionsResult(arrayOf(Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_AUDIO), grantResults)
+          handleRequestPermissionsResult(arrayOf(
+            Manifest.permission.READ_MEDIA_IMAGES,
+            Manifest.permission.READ_MEDIA_VIDEO,
+            Manifest.permission.READ_MEDIA_AUDIO,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+          ), grantResults)
         }
         else{
           handleRequestPermissionsResult(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), grantResults)
