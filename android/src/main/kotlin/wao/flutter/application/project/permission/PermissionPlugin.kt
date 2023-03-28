@@ -54,7 +54,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
   @TargetApi(33)
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     pendingResult = result
-    val isRequest = call.argument<Boolean>("isRequest")
+    val isRequest: Boolean = call.argument<Boolean>("isRequest")!!
     when (call.method) {
       "open_screen" -> {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
