@@ -19,6 +19,9 @@ class PermissionRequest {
       else if(type == PermissionRequestType.LOCATION){
         result = await channel.invokeMethod<int>('location',{'isRequest':true});
       }
+      else if(type == PermissionRequestType.BACKGROUND_LOCATION){
+        result = await channel.invokeMethod<int>('background_location',{'isRequest':true});
+      }
       else if(type == PermissionRequestType.STORAGE){
         result = await channel.invokeMethod<int>('storage',{'isRequest':true});
       }
@@ -49,6 +52,9 @@ class PermissionRequest {
       else if(type == PermissionRequestType.LOCATION){
         result = await channel.invokeMethod<int>('location',{'isRequest':false});
       }
+      else if(type == PermissionRequestType.BACKGROUND_LOCATION){
+        result = await channel.invokeMethod<int>('background_location',{'isRequest':false});
+      }
       else if(type == PermissionRequestType.STORAGE){
         result = await channel.invokeMethod<int>('storage',{'isRequest':false});
       }
@@ -66,5 +72,5 @@ class PermissionRequest {
 }
 
 enum PermissionRequestType{
-  CAMERA, LOCATION, STORAGE, NOTIFICATION, MICROPHONE
+  CAMERA, LOCATION, BACKGROUND_LOCATION, STORAGE, NOTIFICATION, MICROPHONE
 }

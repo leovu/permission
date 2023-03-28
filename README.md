@@ -20,6 +20,9 @@ Add to AndroidManifest.xml
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
+    <!-- Permissions options for the `background_location` group -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
     <!-- Permissions options for the `record_audio` group -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     

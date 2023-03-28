@@ -33,6 +33,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
   private val REQUEST_PERMISSION = 100
   private val REQUEST_CAMERA_PERMISSION = 101
   private val REQUEST_LOCATION_PERMISSION = 102
+  private val REQUEST_BACKGROUND_LOCATION_PERMISSION = 103
   private val REQUEST_STORAGE_PERMISSION = 104
   private val REQUEST_NOTIFICATION_PERMISSION = 105
   private val REQUEST_MICROPHONE_PERMISSION = 106
@@ -63,6 +64,14 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
       }
       "location" -> {
         handlePermission(result, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
+      }
+      "background_location" -> {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+          handlePermission(result, arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), REQUEST_BACKGROUND_LOCATION_PERMISSION)
+        }
+        else{
+          result.success(1)
+        }
       }
       "storage" -> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -143,6 +152,9 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
     when (requestCode) {
       REQUEST_LOCATION_PERMISSION -> {
         handleRequestPermissionsResult(arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), grantResults)
+      }
+      REQUEST_BACKGROUND_LOCATION_PERMISSION -> {
+        handleRequestPermissionsResult(arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), grantResults)
       }
       REQUEST_CAMERA_PERMISSION -> {
         handleRequestPermissionsResult(arrayOf(Manifest.permission.CAMERA), grantResults)
