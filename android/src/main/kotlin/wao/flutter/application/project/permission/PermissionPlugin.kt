@@ -30,6 +30,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
   /// This local reference serves to register the plugin with the Flutter Engine and unregister it
   /// when the Flutter Engine is detached from the Activity
   private lateinit var channel : MethodChannel
+  private val CHECK_PERMISSION = 0
   private val REQUEST_PERMISSION = 100
   private val REQUEST_CAMERA_PERMISSION = 101
   private val REQUEST_LOCATION_PERMISSION = 102
@@ -53,6 +54,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
   @TargetApi(33)
   override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     pendingResult = result
+    val isRequest = call.argument<Boolean>("isRequest")
     when (call.method) {
       "open_screen" -> {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -60,14 +62,27 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
         currentActivity.startActivityForResult(intent, REQUEST_PERMISSION)
       }
       "camera" -> {
-        handlePermission(result, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+        handlePermission(
+          result,
+          arrayOf(Manifest.permission.CAMERA),
+          if(isRequest) REQUEST_CAMERA_PERMISSION else CHECK_PERMISSION
+        )
       }
       "location" -> {
-        handlePermission(result, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
+        handlePermission(
+          result,
+          arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION),
+          if(isRequest) REQUEST_LOCATION_PERMISSION else CHECK_PERMISSION
+        )
       }
       "background_location" -> {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-          handlePermission(result, arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION), REQUEST_BACKGROUND_LOCATION_PERMISSION)
+          handlePermission(
+            result,
+            arrayOf(Manifest.permission.ACCESS_BACKGROUND_LOCATION),
+            if(isRequest) REQUEST_BACKGROUND_LOCATION_PERMISSION else CHECK_PERMISSION
+          )
         }
         else{
           result.success(1)
@@ -79,18 +94,32 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
             Manifest.permission.READ_MEDIA_IMAGES,
             Manifest.permission.READ_MEDIA_VIDEO,
             Manifest.permission.READ_MEDIA_AUDIO
-          ), REQUEST_STORAGE_PERMISSION)
+          ), if(isRequest) REQUEST_STORAGE_PERMISSION else CHECK_PERMISSION)
         }
         else {
-          handlePermission(result, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_STORAGE_PERMISSION)
+          handlePermission(
+            result,
+            arrayOf(
+              Manifest.permission.READ_EXTERNAL_STORAGE,
+              Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ),
+            if(isRequest) REQUEST_STORAGE_PERMISSION else CHECK_PERMISSION)
         }
       }
       "microphone" -> {
-        handlePermission(result, arrayOf(Manifest.permission.RECORD_AUDIO), REQUEST_MICROPHONE_PERMISSION)
+        handlePermission(
+          result,
+          arrayOf(Manifest.permission.RECORD_AUDIO),
+          if(isRequest) REQUEST_MICROPHONE_PERMISSION else CHECK_PERMISSION
+        )
       }
       "notification" -> {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-          handlePermission(result, arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATION_PERMISSION)
+          handlePermission(
+            result,
+            arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+            if(isRequest) REQUEST_NOTIFICATION_PERMISSION else CHECK_PERMISSION
+          )
         }
         else {
           result.success(1)
