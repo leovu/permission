@@ -3,33 +3,34 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 
 class PermissionRequest {
+  static final _channel = MethodChannel("flutter.permission/requestPermission");
+
   static openSetting() {
     MethodChannel("flutter.permission/requestPermission").invokeMethod('open_screen');
   }
 
   static Future<bool> request(PermissionRequestType type, Function onDontAskAgain) async {
-    final channel = MethodChannel("flutter.permission/requestPermission");
     bool event = false;
     int? result = 0;
 
     try{
       if(type == PermissionRequestType.CAMERA){
-        result = await channel.invokeMethod<int>('camera',{'isRequest':true});
+        result = await _channel.invokeMethod<int>('camera',{'isRequest':true});
       }
       else if(type == PermissionRequestType.LOCATION){
-        result = await channel.invokeMethod<int>('location',{'isRequest':true});
+        result = await _channel.invokeMethod<int>('location',{'isRequest':true});
       }
       else if(type == PermissionRequestType.BACKGROUND_LOCATION){
-        result = await channel.invokeMethod<int>('background_location',{'isRequest':true});
+        result = await _channel.invokeMethod<int>('background_location',{'isRequest':true});
       }
       else if(type == PermissionRequestType.STORAGE){
-        result = await channel.invokeMethod<int>('storage',{'isRequest':true});
+        result = await _channel.invokeMethod<int>('storage',{'isRequest':true});
       }
       else if(type == PermissionRequestType.NOTIFICATION){
-        result = await channel.invokeMethod<int>('notification',{'isRequest':true});
+        result = await _channel.invokeMethod<int>('notification',{'isRequest':true});
       }
       else if(type == PermissionRequestType.MICROPHONE){
-        result = await channel.invokeMethod<int>('microphone',{'isRequest':true});
+        result = await _channel.invokeMethod<int>('microphone',{'isRequest':true});
       }
     }
     catch(_){}
@@ -43,26 +44,25 @@ class PermissionRequest {
   }
 
   static Future<bool> check(PermissionRequestType type) async {
-    final channel = MethodChannel("flutter.permission/checkPermission");
     int? result = 0;
     try{
       if(type == PermissionRequestType.CAMERA){
-        result = await channel.invokeMethod<int>('camera',{'isRequest':false});
+        result = await _channel.invokeMethod<int>('camera',{'isRequest':false});
       }
       else if(type == PermissionRequestType.LOCATION){
-        result = await channel.invokeMethod<int>('location',{'isRequest':false});
+        result = await _channel.invokeMethod<int>('location',{'isRequest':false});
       }
       else if(type == PermissionRequestType.BACKGROUND_LOCATION){
-        result = await channel.invokeMethod<int>('background_location',{'isRequest':false});
+        result = await _channel.invokeMethod<int>('background_location',{'isRequest':false});
       }
       else if(type == PermissionRequestType.STORAGE){
-        result = await channel.invokeMethod<int>('storage',{'isRequest':false});
+        result = await _channel.invokeMethod<int>('storage',{'isRequest':false});
       }
       else if(type == PermissionRequestType.NOTIFICATION){
-        result = await channel.invokeMethod<int>('notification',{'isRequest':false});
+        result = await _channel.invokeMethod<int>('notification',{'isRequest':false});
       }
       else if(type == PermissionRequestType.MICROPHONE){
-        result = await channel.invokeMethod<int>('microphone',{'isRequest':false});
+        result = await _channel.invokeMethod<int>('microphone',{'isRequest':false});
       }
     }
     catch(_){}

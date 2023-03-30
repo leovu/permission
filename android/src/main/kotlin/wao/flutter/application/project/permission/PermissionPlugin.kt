@@ -144,7 +144,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
       result.success(1)
     }
     else{
-      if(keyRequest == 0){
+      if(keyRequest == CHECK_PERMISSION){
         result.success(0)
       }
       else{
