@@ -327,7 +327,6 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
 public class GetLocation: NSObject, CLLocationManagerDelegate {
     var manager:CLLocationManager!
     private var handler: ((CLLocation?) -> Void)?
-    var locationServicesEnabled = false
     var didFailWithError: Error?
 
     override init() {
@@ -340,10 +339,7 @@ public class GetLocation: NSObject, CLLocationManagerDelegate {
         manager.requestLocation()
         manager.requestWhenInUseAuthorization()
         manager.requestAlwaysAuthorization()
-        self.locationServicesEnabled = CLLocationManager.locationServicesEnabled()
-        if locationServicesEnabled {
-            manager.startUpdatingLocation()
-        }
+        manager.startUpdatingLocation()
         self.handler = handler
     }
 
