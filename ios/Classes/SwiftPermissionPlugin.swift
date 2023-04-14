@@ -223,18 +223,18 @@ class Permission {
         isCallingLocationRequest = true
         switch CLLocationManager.authorizationStatus() {
         case .restricted, .denied:
-                self.isCallingLocationRequest = true
+                self.isCallingLocationRequest = false
                 self.pendingResultLocation?(-1)
                 self.pendingResultLocation = nil
         case .authorizedAlways, .authorizedWhenInUse , .authorized:
             Permission.shared.getLocation.run { location in
                     if location != nil {
-                        self.isCallingLocationRequest = true
+                        self.isCallingLocationRequest = false
                         self.pendingResultLocation?(1)
                         self.pendingResultLocation = nil
                     }
                     else {
-                        self.isCallingLocationRequest = true
+                        self.isCallingLocationRequest = false
                         self.pendingResultLocation?(-1)
                         self.pendingResultLocation = nil
                     }
@@ -244,19 +244,19 @@ class Permission {
                     let getLocation = GetLocation()
                     getLocation.run { location in
                         if location != nil {
-                            self.isCallingLocationRequest = true
+                            self.isCallingLocationRequest = false
                             self.pendingResultLocation?(1)
                             self.pendingResultLocation = nil
                         }
                         else {
-                            self.isCallingLocationRequest = true
+                            self.isCallingLocationRequest = false
                             self.pendingResultLocation?(-1)
                             self.pendingResultLocation = nil
                         }
                     }
                 }
                 else {
-                    self.isCallingLocationRequest = true
+                    self.isCallingLocationRequest = false
                     self.pendingResultLocation?(-1)
                     self.pendingResultLocation = nil
                 }
