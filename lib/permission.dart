@@ -36,7 +36,7 @@ class PermissionRequest {
     catch(_){}
 
     if(result == -1)
-      onDontAskAgain();
+      await onDontAskAgain();
     else if(result == 1)
       event = true;
 
