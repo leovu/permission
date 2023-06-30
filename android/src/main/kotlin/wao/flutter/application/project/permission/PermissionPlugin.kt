@@ -40,7 +40,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
   private val REQUEST_MICROPHONE_PERMISSION = 106
   private val RequestPermissionChannel = "flutter.permission/requestPermission"
 
-  private lateinit var pendingResult: Result
+  private var pendingResult: Result? = null
   private lateinit var context: Context
   private lateinit var currentActivity: Activity
 
@@ -89,6 +89,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
         }
         else{
           result.success(1)
+          pendingResult = null
         }
       }
       "storage" -> {
@@ -126,6 +127,7 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
         }
         else {
           result.success(1)
+          pendingResult = null
         }
       }
     }
@@ -145,10 +147,12 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
     }
     if (granted) {
       result.success(1)
+      pendingResult = null
     }
     else{
       if(keyRequest == CHECK_PERMISSION){
         result.success(0)
+        pendingResult = null
       }
       else{
         ActivityCompat.requestPermissions(currentActivity,
@@ -170,13 +174,14 @@ class PermissionPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginR
       }
 
       if(shouldShowRequest)
-        pendingResult.success(0)
+        pendingResult?.success(0)
       else
-        pendingResult.success(-1)
+        pendingResult?.success(-1)
     }
     else{
-      pendingResult.success(1)
+      pendingResult?.success(1)
     }
+    pendingResult = null
   }
 
   @TargetApi(33)
