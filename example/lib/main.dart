@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:permission/permission.dart';
+import 'package:permission_example/custom_navigator.dart';
+import 'package:permission_example/custom_permission_request.dart';
 
 void main() {
   runApp(MyApp());
@@ -60,30 +64,101 @@ class HomeScreenState extends State<HomeScreen> {
                   "Request Location Permission"
               ),
               onPressed: () async {
-                _isAllow = await PermissionRequest.request(PermissionRequestType.LOCATION, (){
-                  showDialog(
-                      context: context,
-                      builder: (_){
-                        return AlertDialog(
-                          title: Text("Allowed to access"),
-                          content: Text("Select Settings to App Information, select (Permissions), enable access and re-enter this screen to use Storage"),
-                          actions: [
-                            TextButton(
-                                child: Text("Allow"),
-                                onPressed: (){
-                                  Navigator.of(context).pop();
-                                  PermissionRequest.openSetting();
-                                }
-                            )
-                          ],
-                        );
-                      }
-                  );
-                });
-                setState(() {});
+                _checkLocationPermission();
+                // _isAllow = await PermissionRequest.request(PermissionRequestType.LOCATION, (){
+                //   showDialog(
+                //       context: context,
+                //       builder: (_){
+                //         return AlertDialog(
+                //           title: Text("Allowed to access"),
+                //           content: Text("Select Settings to App Information, select (Permissions), enable access and re-enter this screen to use Storage"),
+                //           actions: [
+                //             TextButton(
+                //                 child: Text("Allow"),
+                //                 onPressed: (){
+                //                   Navigator.of(context).pop();
+                //                   PermissionRequest.openSetting();
+                //                 }
+                //             )
+                //           ],
+                //         );
+                //       }
+                //   );
+                // });
+                // setState(() {});
               }
           )
       ),
     );
   }
+
+
+  Future<bool> _checkBackgroundLocationPermission() async {
+    if (Platform.isAndroid) {
+      return CustomPermissionRequest.check(
+          PermissionRequestType.BACKGROUND_LOCATION);
+    } else {
+      return CustomPermissionRequest.check(PermissionRequestType.LOCATION,
+          checkAlways: true);
+    }
+  }
+
+  _checkLocationPermission() async {
+    bool value = await CustomPermissionRequest.check(
+      PermissionRequestType.LOCATION,
+    );
+
+    if (value) {
+      value = await _checkBackgroundLocationPermission();
+
+      if (!value) {
+        await CustomNavigator.showCustomAlertDialog(
+            context, "back ground request",
+            textSubmitted: "ok",
+            cancelable: false,
+            onSubmitted: () => CustomNavigator.pop(context, object: true));
+
+        _requestBackgroundLocationPermission();
+      } else {
+        init();
+      }
+    } else {
+      await CustomNavigator.showCustomAlertDialog(
+          context, "back ground request",
+          textSubmitted: "ok",
+          cancelable: false,
+          onSubmitted: () => CustomNavigator.pop(context, object: true));
+
+      await CustomPermissionRequest.request(
+          context, PermissionRequestType.LOCATION, onDontAskAgain: () {
+        PermissionRequest.openSetting();
+      });
+
+      _checkLocationPermission();
+    }
+  }
+
+
+
+  Future<void> init() async {
+    print("heelolllloooo");
+  }
+
+
+  _requestBackgroundLocationPermission() async {
+    if (Platform.isAndroid) {
+      bool value = await CustomPermissionRequest.request(
+          context, PermissionRequestType.BACKGROUND_LOCATION,
+          onDontAskAgain: () => PermissionRequest.openSetting());
+      if (!value) {
+        _checkLocationPermission();
+      }
+    } else {
+      PermissionRequest.openSetting();
+      _checkLocationPermission();
+    }
+  }
+
+
+
 }

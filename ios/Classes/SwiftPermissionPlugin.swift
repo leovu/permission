@@ -14,9 +14,8 @@ enum AppPermission
    case microphone
 }
 
-class Permission {
+class Permission:NSObject,CLLocationManagerDelegate {
     static let shared = Permission()
-    let getLocation = GetLocation()
     var pendingResultCamera:FlutterResult?
     var pendingResultLocation:FlutterResult?
     var pendingResultRecordAudio:FlutterResult?
@@ -24,238 +23,244 @@ class Permission {
     var pendingResultStorage:FlutterResult?
     var pendingResultNotification:FlutterResult?
     var pendingResultMicrophone:FlutterResult?
+    var manager:CLLocationManager!
     
     func requestPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
-            if type == .location {
-                self.checkLocationPermission(result: result, type: type, isRequest: isRequest)
-            }
-            else if type == .camera {
-                self.checkCameraPermission(result: result, type: type, isRequest: isRequest)
-            }
-            else if type == .storage {
-                self.checkPhotoPermission(result: result, type: type, isRequest: isRequest)
-            }
-            else if type == .record_audio {
-                self.checkMicrophonePermission(result: result, type: type, isRequest: isRequest)
-            }
-            else if type == .notification {
-                self.checkNotificationPermission(result: result, type: type, isRequest: isRequest)
-            }
-            else if type == .microphone {
-                self.checkMicrophonePermission(result: result, type: type, isRequest: isRequest)
-            }
+        if type == .location {
+            self.checkLocationPermission(result: result, type: type, isRequest: isRequest)
         }
+        else if type == .camera {
+            self.checkCameraPermission(result: result, type: type, isRequest: isRequest)
+        }
+        else if type == .storage {
+            self.checkPhotoPermission(result: result, type: type, isRequest: isRequest)
+        }
+        else if type == .record_audio {
+            self.checkMicrophonePermission(result: result, type: type, isRequest: isRequest)
+        }
+        else if type == .notification {
+            self.checkNotificationPermission(result: result, type: type, isRequest: isRequest)
+        }
+        else if type == .microphone {
+            self.checkMicrophonePermission(result: result, type: type, isRequest: isRequest)
+        }
+    }
     
-        func checkNotificationPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
-            UNUserNotificationCenter.current().getNotificationSettings { (settings) in
-                if settings.authorizationStatus == .notDetermined {
-                    if(isRequest) {
-                        let center  = UNUserNotificationCenter.current()
-                        center.requestAuthorization(options: [.sound, .alert, .badge]) { (granted, error) in
-                            if error == nil{
-                                UIApplication.shared.registerForRemoteNotifications()
-                            }
-                            if granted {
-                                self.pendingResultNotification?(1)
-                                self.pendingResultNotification = nil
-                            }
-                            else {
-                                self.pendingResultNotification?(0)
-                                self.pendingResultNotification = nil
-                            }
+    func checkNotificationPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
+        UNUserNotificationCenter.current().getNotificationSettings { (settings) in
+            if settings.authorizationStatus == .notDetermined {
+                if(isRequest) {
+                    let center  = UNUserNotificationCenter.current()
+                    center.requestAuthorization(options: [.sound, .alert, .badge]) { (granted, error) in
+                        if error == nil{
+                            UIApplication.shared.registerForRemoteNotifications()
                         }
-                    }
-                    else {
-                        self.pendingResultNotification?(0)
-                        self.pendingResultNotification = nil
-                    }
-                }
-                else if settings.authorizationStatus == .denied {
-                    self.pendingResultNotification?(-1)
-                    self.pendingResultNotification = nil
-                }
-                else {
-                    self.pendingResultNotification?(1)
-                    self.pendingResultNotification = nil
-                }
-            }
-        }
-
-        func checkMicrophonePermission(result: FlutterResult,type:AppPermission,isRequest:Bool){
-            switch AVAudioSession.sharedInstance().recordPermission {
-            case AVAudioSession.RecordPermission.denied:
-                if pendingResultRecordAudio != nil {
-                    pendingResultRecordAudio?(-1)
-                    pendingResultRecordAudio = nil
-                }
-                if pendingResultMicrophone != nil {
-                    pendingResultMicrophone?(-1)
-                    pendingResultMicrophone = nil
-                }
-            case AVAudioSession.RecordPermission.granted:
-                if pendingResultRecordAudio != nil {
-                    pendingResultRecordAudio?(1)
-                    pendingResultRecordAudio = nil
-                }
-                if pendingResultMicrophone != nil {
-                    pendingResultMicrophone?(1)
-                    pendingResultMicrophone = nil
-                }
-            default:
-                if isRequest {
-                    AVAudioSession.sharedInstance().requestRecordPermission({ (granted) in
                         if granted {
-                            if self.pendingResultRecordAudio != nil {
-                                self.pendingResultRecordAudio?(1)
-                                self.pendingResultRecordAudio = nil
-                            }
-                            if self.pendingResultMicrophone != nil {
-                                self.pendingResultMicrophone?(1)
-                                self.pendingResultMicrophone = nil
-                            }
-                        } else{
-                            if self.pendingResultRecordAudio != nil {
-                                self.pendingResultRecordAudio?(-1)
-                                self.pendingResultRecordAudio = nil
-                            }
-                            if self.pendingResultMicrophone != nil {
-                                self.pendingResultMicrophone?(-1)
-                                self.pendingResultMicrophone = nil
-                            }
+                            self.pendingResultNotification?(1)
+                            self.pendingResultNotification = nil
                         }
-                    })
+                        else {
+                            self.pendingResultNotification?(0)
+                            self.pendingResultNotification = nil
+                        }
+                    }
                 }
                 else {
-                    if self.pendingResultRecordAudio != nil {
-                        self.pendingResultRecordAudio?(0)
-                        self.pendingResultRecordAudio = nil
+                    self.pendingResultNotification?(0)
+                    self.pendingResultNotification = nil
+                }
+            }
+            else if settings.authorizationStatus == .denied {
+                self.pendingResultNotification?(-1)
+                self.pendingResultNotification = nil
+            }
+            else {
+                self.pendingResultNotification?(1)
+                self.pendingResultNotification = nil
+            }
+        }
+    }
+    
+    func checkMicrophonePermission(result: FlutterResult,type:AppPermission,isRequest:Bool){
+        switch AVAudioSession.sharedInstance().recordPermission {
+        case AVAudioSession.RecordPermission.denied:
+            if pendingResultRecordAudio != nil {
+                pendingResultRecordAudio?(-1)
+                pendingResultRecordAudio = nil
+            }
+            if pendingResultMicrophone != nil {
+                pendingResultMicrophone?(-1)
+                pendingResultMicrophone = nil
+            }
+        case AVAudioSession.RecordPermission.granted:
+            if pendingResultRecordAudio != nil {
+                pendingResultRecordAudio?(1)
+                pendingResultRecordAudio = nil
+            }
+            if pendingResultMicrophone != nil {
+                pendingResultMicrophone?(1)
+                pendingResultMicrophone = nil
+            }
+        default:
+            if isRequest {
+                AVAudioSession.sharedInstance().requestRecordPermission({ (granted) in
+                    if granted {
+                        if self.pendingResultRecordAudio != nil {
+                            self.pendingResultRecordAudio?(1)
+                            self.pendingResultRecordAudio = nil
+                        }
+                        if self.pendingResultMicrophone != nil {
+                            self.pendingResultMicrophone?(1)
+                            self.pendingResultMicrophone = nil
+                        }
+                    } else{
+                        if self.pendingResultRecordAudio != nil {
+                            self.pendingResultRecordAudio?(-1)
+                            self.pendingResultRecordAudio = nil
+                        }
+                        if self.pendingResultMicrophone != nil {
+                            self.pendingResultMicrophone?(-1)
+                            self.pendingResultMicrophone = nil
+                        }
                     }
-                    if self.pendingResultMicrophone != nil {
-                        self.pendingResultMicrophone?(0)
-                        self.pendingResultMicrophone = nil
-                    }
+                })
+            }
+            else {
+                if self.pendingResultRecordAudio != nil {
+                    self.pendingResultRecordAudio?(0)
+                    self.pendingResultRecordAudio = nil
+                }
+                if self.pendingResultMicrophone != nil {
+                    self.pendingResultMicrophone?(0)
+                    self.pendingResultMicrophone = nil
                 }
             }
         }
-
-        func checkCameraPermission(result: FlutterResult,type:AppPermission,isRequest:Bool){
-            switch AVCaptureDevice.authorizationStatus(for: .video) {
-            case .denied,.restricted:
-                pendingResultCamera?(-1)
-                pendingResultCamera = nil
-            case .authorized:
-                pendingResultCamera?(1)
-                pendingResultCamera = nil
-            case .notDetermined:
-                if isRequest {
-                    AVCaptureDevice.requestAccess(for: AVMediaType.video) { response in
-                        if response {
-                            self.pendingResultCamera?(1)
-                            self.pendingResultCamera = nil
-                        } else {
-                            self.pendingResultCamera?(-1)
-                            self.pendingResultCamera = nil
-                        }
+    }
+    
+    func checkCameraPermission(result: FlutterResult,type:AppPermission,isRequest:Bool){
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .denied,.restricted:
+            pendingResultCamera?(-1)
+            pendingResultCamera = nil
+        case .authorized:
+            pendingResultCamera?(1)
+            pendingResultCamera = nil
+        case .notDetermined:
+            if isRequest {
+                AVCaptureDevice.requestAccess(for: AVMediaType.video) { response in
+                    if response {
+                        self.pendingResultCamera?(1)
+                        self.pendingResultCamera = nil
+                    } else {
+                        self.pendingResultCamera?(-1)
+                        self.pendingResultCamera = nil
                     }
                 }
-                else {
-                    self.pendingResultCamera?(0)
-                    self.pendingResultCamera = nil
-                }
-            @unknown default:
+            }
+            else {
                 self.pendingResultCamera?(0)
                 self.pendingResultCamera = nil
             }
+        @unknown default:
+            self.pendingResultCamera?(0)
+            self.pendingResultCamera = nil
         }
+    }
     
-        func checkPhotoPermission(result: FlutterResult,type:AppPermission,isRequest:Bool){
-            let photos = PHPhotoLibrary.authorizationStatus()
-                if photos == .notDetermined {
-                    if isRequest {
-                        PHPhotoLibrary.requestAuthorization({status in
-                            if status == .authorized{
-                                self.pendingResultStorage?(1)
-                                self.pendingResultStorage = nil
-                            }
-                            else {
-                                self.pendingResultStorage?(0)
-                                self.pendingResultStorage = nil
-                            }
-                        })
+    func checkPhotoPermission(result: FlutterResult,type:AppPermission,isRequest:Bool){
+        let photos = PHPhotoLibrary.authorizationStatus()
+        if photos == .notDetermined {
+            if isRequest {
+                PHPhotoLibrary.requestAuthorization({status in
+                    if status == .authorized{
+                        self.pendingResultStorage?(1)
+                        self.pendingResultStorage = nil
                     }
                     else {
                         self.pendingResultStorage?(0)
                         self.pendingResultStorage = nil
                     }
-                } else if photos == .authorized{
-                    self.pendingResultStorage?(1)
-                    self.pendingResultStorage = nil
-                }
-                else {
-                    pendingResultStorage?(-1)
-                    pendingResultStorage = nil
-                }
+                })
+            }
+            else {
+                self.pendingResultStorage?(0)
+                self.pendingResultStorage = nil
+            }
+        } else if photos == .authorized{
+            self.pendingResultStorage?(1)
+            self.pendingResultStorage = nil
         }
-
+        else {
+            pendingResultStorage?(-1)
+            pendingResultStorage = nil
+        }
+    }
+    
     func checkLocationPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
         if(!isRequest) {
             permission(isRequest: false)
         }
         else {
-            Permission.shared.getLocation.run { location in
-                if location != nil {
-                    self.pendingResultLocation?(1)
-                    self.pendingResultLocation = nil
-                }
-                else {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        self.permission(isRequest: true)
-                    }
-                }
-            }
+            run()
         }
     }
-    var isCallingLocationRequest = false
     func permission(isRequest:Bool) {
-        if isCallingLocationRequest {
-            return
-        }
-        isCallingLocationRequest = true
         if(isRequest) {
-            getLocation.run { location in
-                if location != nil {
-                    self.isCallingLocationRequest = false
-                    self.pendingResultLocation?(1)
-                    self.pendingResultLocation = nil
-                }
-                else {
-                    self.isCallingLocationRequest = false
-                    self.pendingResultLocation?(-1)
-                    self.pendingResultLocation = nil
-                }
-            }
+            run()
         }
         else {
             switch CLLocationManager.authorizationStatus() {
             case .restricted, .denied:
-                    self.isCallingLocationRequest = false
-                    self.pendingResultLocation?(-1)
-                    self.pendingResultLocation = nil
+                self.pendingResultLocation?(-1)
+                self.pendingResultLocation = nil
             case .authorizedAlways, .authorizedWhenInUse , .authorized:
-                    self.isCallingLocationRequest = false
-                    self.pendingResultLocation?(1)
-                    self.pendingResultLocation = nil
+                self.pendingResultLocation?(1)
+                self.pendingResultLocation = nil
             default:
-                    self.isCallingLocationRequest = false
-                    self.pendingResultLocation?(-1)
-                    self.pendingResultLocation = nil
+                self.pendingResultLocation?(0)
+                self.pendingResultLocation = nil
+                break
+            }
+        }
+    }
+    
+    public func run() {
+        Permission.shared.manager.delegate = self
+        Permission.shared.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+        Permission.shared.manager.requestAlwaysAuthorization()
+        Permission.shared.manager.requestWhenInUseAuthorization()
+        Permission.shared.manager.requestLocation()
+        Permission.shared.manager.startUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        
+    }
+     
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if Permission.shared.pendingResultLocation != nil {
+            switch CLLocationManager.authorizationStatus() {
+            case .restricted, .denied:
+                Permission.shared.pendingResultLocation?(-1)
+                Permission.shared.pendingResultLocation = nil
+            case .authorizedAlways, .authorizedWhenInUse , .authorized:
+                Permission.shared.pendingResultLocation?(1)
+                Permission.shared.pendingResultLocation = nil
+            default:
+                Permission.shared.pendingResultLocation?(0)
+                Permission.shared.pendingResultLocation = nil
                 break
             }
         }
     }
 }
 
-public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
+public class SwiftPermissionPlugin: NSObject, FlutterPlugin, CLLocationManagerDelegate {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channelRequest = FlutterMethodChannel(name: "flutter.permission/requestPermission",
                                                binaryMessenger: registrar.messenger())
@@ -286,10 +291,13 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                   else {
                       var isRequest:Bool = false
                       var isAlways:Bool = false
-                      if let dictionary = call.arguments as? [String: Any],
-                            let iR = dictionary ["isRequest"] as? Bool , let iA = dictionary["isAlways"] as? Bool {
-                          isRequest = iR
-                          isAlways = iA
+                      if let dictionary = call.arguments as? [String: Any] {
+                          if let iR = dictionary ["isRequest"] as? Bool {
+                              isRequest = iR
+                          }
+                          if let iA = dictionary["isAlways"] as? Bool {
+                              isAlways = iA
+                          }
                       }
                       if isAlways {
                           if CLLocationManager.authorizationStatus() == .authorizedAlways {
@@ -309,6 +317,7 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                               Permission.shared.requestPermission(result: result, type: .storage, isRequest: isRequest)
                             }
                           else if call.method == "location" {
+                            Permission.shared.manager = CLLocationManager()
                             Permission.shared.pendingResultLocation = result
                             Permission.shared.requestPermission(result: result, type: .location, isRequest: isRequest)
                           }
@@ -327,55 +336,5 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                       }
                       
                 }
-    }
-}
-
-public class GetLocation: NSObject, CLLocationManagerDelegate {
-    var manager:CLLocationManager!
-    private var handler: ((CLLocation?) -> Void)?
-    var didFailWithError: Error?
-
-    override init() {
-        manager = CLLocationManager()
-    }
-    
-    public func run(handler: @escaping (CLLocation?) -> Void) {
-        manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        manager.requestLocation()
-        manager.requestWhenInUseAuthorization()
-        manager.requestAlwaysAuthorization()
-        manager.startUpdatingLocation()
-        self.handler = handler
-    }
-
-   public func locationManager(_ manager: CLLocationManager,
-                         didUpdateLocations locations: [CLLocation]) {
-        self.handler!(locations.last!)
-        manager.stopUpdatingLocation()
-    }
-
-    public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        didFailWithError = error
-        self.handler!(nil)
-        manager.stopUpdatingLocation()
-    }
-    
-    public func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        if #available(iOS 14.0, *) {
-            if manager.authorizationStatus == .denied {
-                self.handler!(nil)
-            }
-        }
-    }
-    
-    public func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
-        if status == .denied {
-            self.handler!(nil)
-        }
-    }
-
-    deinit {
-        manager.stopUpdatingLocation()
     }
 }
