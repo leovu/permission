@@ -221,46 +221,36 @@ class Permission {
             return
         }
         isCallingLocationRequest = true
-        switch CLLocationManager.authorizationStatus() {
-        case .restricted, .denied:
-                self.isCallingLocationRequest = false
-                self.pendingResultLocation?(-1)
-                self.pendingResultLocation = nil
-        case .authorizedAlways, .authorizedWhenInUse , .authorized:
-            Permission.shared.getLocation.run { location in
-                    if location != nil {
-                        self.isCallingLocationRequest = false
-                        self.pendingResultLocation?(1)
-                        self.pendingResultLocation = nil
-                    }
-                    else {
-                        self.isCallingLocationRequest = false
-                        self.pendingResultLocation?(-1)
-                        self.pendingResultLocation = nil
-                    }
-                }
-        default:
-                if(isRequest) {
-                    let getLocation = GetLocation()
-                    getLocation.run { location in
-                        if location != nil {
-                            self.isCallingLocationRequest = false
-                            self.pendingResultLocation?(1)
-                            self.pendingResultLocation = nil
-                        }
-                        else {
-                            self.isCallingLocationRequest = false
-                            self.pendingResultLocation?(-1)
-                            self.pendingResultLocation = nil
-                        }
-                    }
+        if(isRequest) {
+            getLocation.run { location in
+                if location != nil {
+                    self.isCallingLocationRequest = false
+                    self.pendingResultLocation?(1)
+                    self.pendingResultLocation = nil
                 }
                 else {
                     self.isCallingLocationRequest = false
                     self.pendingResultLocation?(-1)
                     self.pendingResultLocation = nil
                 }
-            break
+            }
+        }
+        else {
+            switch CLLocationManager.authorizationStatus() {
+            case .restricted, .denied:
+                    self.isCallingLocationRequest = false
+                    self.pendingResultLocation?(-1)
+                    self.pendingResultLocation = nil
+            case .authorizedAlways, .authorizedWhenInUse , .authorized:
+                    self.isCallingLocationRequest = false
+                    self.pendingResultLocation?(1)
+                    self.pendingResultLocation = nil
+            default:
+                    self.isCallingLocationRequest = false
+                    self.pendingResultLocation?(-1)
+                    self.pendingResultLocation = nil
+                break
+            }
         }
     }
 }
