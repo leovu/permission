@@ -294,32 +294,48 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin {
                       }
                   }
                   else {
-                      guard let dictionary = call.arguments as? [String: Any],
-                            let isRequest = dictionary ["isRequest"] as? Bool else { return }
-                      if call.method == "camera" {
-                        Permission.shared.pendingResultCamera = result
-                          Permission.shared.requestPermission(result: result, type: .camera, isRequest: isRequest)
+                      var isRequest:Bool = false
+                      var isAlways:Bool = false
+                      if let dictionary = call.arguments as? [String: Any],
+                            let iR = dictionary ["isRequest"] as? Bool , let iA = dictionary["isAlways"] as? Bool {
+                          isRequest = iR
+                          isAlways = iA
                       }
-                        else if call.method == "storage" {
-                          Permission.shared.pendingResultStorage = result
-                          Permission.shared.requestPermission(result: result, type: .storage, isRequest: isRequest)
-                        }
-                      else if call.method == "location" {
-                        Permission.shared.pendingResultLocation = result
-                        Permission.shared.requestPermission(result: result, type: .location, isRequest: isRequest)
+                      if isAlways {
+                          if CLLocationManager.authorizationStatus() == .authorizedAlways {
+                              result(1)
+                          }
+                          else {
+                              result(0)
+                          }
                       }
-                      else if call.method == "record_audio" {
-                        Permission.shared.pendingResultRecordAudio = result
-                        Permission.shared.requestPermission(result: result, type: .record_audio, isRequest: isRequest)
+                      else {
+                          if call.method == "camera" {
+                            Permission.shared.pendingResultCamera = result
+                            Permission.shared.requestPermission(result: result, type: .camera, isRequest: isRequest)
+                          }
+                            else if call.method == "storage" {
+                              Permission.shared.pendingResultStorage = result
+                              Permission.shared.requestPermission(result: result, type: .storage, isRequest: isRequest)
+                            }
+                          else if call.method == "location" {
+                            Permission.shared.pendingResultLocation = result
+                            Permission.shared.requestPermission(result: result, type: .location, isRequest: isRequest)
+                          }
+                          else if call.method == "record_audio" {
+                            Permission.shared.pendingResultRecordAudio = result
+                            Permission.shared.requestPermission(result: result, type: .record_audio, isRequest: isRequest)
+                          }
+                          else if call.method == "notification" {
+                            Permission.shared.pendingResultNotification = result
+                            Permission.shared.requestPermission(result: result, type: .notification, isRequest: isRequest)
+                          }
+                          else if call.method == "microphone" {
+                            Permission.shared.pendingResultMicrophone = result
+                            Permission.shared.requestPermission(result: result, type: .microphone, isRequest: isRequest)
+                          }
                       }
-                      else if call.method == "notification" {
-                        Permission.shared.pendingResultNotification = result
-                        Permission.shared.requestPermission(result: result, type: .notification, isRequest: isRequest)
-                      }
-                      else if call.method == "microphone" {
-                        Permission.shared.pendingResultMicrophone = result
-                        Permission.shared.requestPermission(result: result, type: .microphone, isRequest: isRequest)
-                      }
+                      
                 }
     }
 }
