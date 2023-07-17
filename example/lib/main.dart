@@ -64,7 +64,10 @@ class HomeScreenState extends State<HomeScreen> {
                   "Request Location Permission"
               ),
               onPressed: () async {
-                _checkLocationPermission();
+                await PermissionRequest.request(PermissionRequestType.CAMERA, (){});
+                await _checkLocationPermission();
+                // _openSetting();
+                // _checkLocationPermission();
                 // _isAllow = await PermissionRequest.request(PermissionRequestType.LOCATION, (){
                 //   showDialog(
                 //       context: context,
@@ -89,6 +92,19 @@ class HomeScreenState extends State<HomeScreen> {
               }
           )
       ),
+    );
+  }
+
+  void _openSetting() {
+    CustomNavigator.showCustomAlertDialog(
+      context, "Xin quyền",
+      title: "Vị trí",
+      enableCancelButton: true,
+      textSubmitted: "Ok",
+      onSubmitted: () {
+        CustomNavigator.pop(context);
+        // PermissionRequest.openSetting();
+      },
     );
   }
 
@@ -131,7 +147,7 @@ class HomeScreenState extends State<HomeScreen> {
 
       await CustomPermissionRequest.request(
           context, PermissionRequestType.LOCATION, onDontAskAgain: () {
-        PermissionRequest.openSetting();
+        // PermissionRequest.openSetting();
       });
 
       _checkLocationPermission();
@@ -149,12 +165,12 @@ class HomeScreenState extends State<HomeScreen> {
     if (Platform.isAndroid) {
       bool value = await CustomPermissionRequest.request(
           context, PermissionRequestType.BACKGROUND_LOCATION,
-          onDontAskAgain: () => PermissionRequest.openSetting());
+          onDontAskAgain: () => (){});
       if (!value) {
         _checkLocationPermission();
       }
     } else {
-      PermissionRequest.openSetting();
+      // PermissionRequest.openSetting();
       _checkLocationPermission();
     }
   }

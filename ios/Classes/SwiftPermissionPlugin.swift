@@ -214,9 +214,15 @@ class Permission:NSObject,CLLocationManagerDelegate {
             case .restricted, .denied:
                 self.pendingResultLocation?(-1)
                 self.pendingResultLocation = nil
+                break
             case .authorizedAlways, .authorizedWhenInUse , .authorized:
                 self.pendingResultLocation?(1)
                 self.pendingResultLocation = nil
+                if CLLocationManager.authorizationStatus() != .authorizedAlways {
+                    Permission.shared.manager.allowsBackgroundLocationUpdates = true
+                    Permission.shared.manager.requestAlwaysAuthorization()
+                }
+                break
             default:
                 self.pendingResultLocation?(0)
                 self.pendingResultLocation = nil
@@ -228,10 +234,8 @@ class Permission:NSObject,CLLocationManagerDelegate {
     public func run() {
         Permission.shared.manager.delegate = self
         Permission.shared.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        Permission.shared.manager.requestAlwaysAuthorization()
+        Permission.shared.manager.allowsBackgroundLocationUpdates = true
         Permission.shared.manager.requestWhenInUseAuthorization()
-        Permission.shared.manager.requestLocation()
-        Permission.shared.manager.startUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

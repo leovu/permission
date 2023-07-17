@@ -27,7 +27,7 @@ class CustomPermissionRequest {
                 textSubmitted: "Ok",
                 onSubmitted: () {
                   CustomNavigator.pop(context);
-                  PermissionRequest.openSetting();
+                  // PermissionRequest.openSetting();
                 },
               );
             });
