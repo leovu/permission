@@ -216,11 +216,13 @@ class Permission:NSObject,CLLocationManagerDelegate {
                 self.pendingResultLocation = nil
                 break
             case .authorizedAlways, .authorizedWhenInUse , .authorized:
-                self.pendingResultLocation?(1)
-                self.pendingResultLocation = nil
                 if CLLocationManager.authorizationStatus() != .authorizedAlways {
                     Permission.shared.manager.allowsBackgroundLocationUpdates = true
                     Permission.shared.manager.requestAlwaysAuthorization()
+                }
+                else {
+                    self.pendingResultLocation?(1)
+                    self.pendingResultLocation = nil
                 }
                 break
             default:
