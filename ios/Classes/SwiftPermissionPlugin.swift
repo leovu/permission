@@ -25,9 +25,9 @@ class Permission:NSObject,CLLocationManagerDelegate {
     var pendingResultMicrophone:FlutterResult?
     var manager:CLLocationManager!
     
-    func requestPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
+    func requestPermission(result: FlutterResult,type:AppPermission,isRequest:Bool,isAlways:Bool) {
         if type == .location {
-            self.checkLocationPermission(result: result, type: type, isRequest: isRequest)
+            self.checkLocationPermission(result: result, type: type, isRequest: isRequest, isAlways: isAlways)
         }
         else if type == .camera {
             self.checkCameraPermission(result: result, type: type, isRequest: isRequest)
@@ -197,15 +197,15 @@ class Permission:NSObject,CLLocationManagerDelegate {
         }
     }
     
-    func checkLocationPermission(result: FlutterResult,type:AppPermission,isRequest:Bool) {
+    func checkLocationPermission(result: FlutterResult,type:AppPermission,isRequest:Bool,isAlways:Bool) {
         if(!isRequest) {
-            permission(isRequest: false)
+            permission(isRequest: false,isAlways:isAlways)
         }
         else {
             run()
         }
     }
-    func permission(isRequest:Bool) {
+    func permission(isRequest:Bool,isAlways:Bool) {
         if(isRequest) {
             run()
         }
@@ -217,10 +217,14 @@ class Permission:NSObject,CLLocationManagerDelegate {
                 break
             case .authorizedAlways, .authorizedWhenInUse , .authorized:
                 if CLLocationManager.authorizationStatus() != .authorizedAlways {
-                    Permission.shared.manager.allowsBackgroundLocationUpdates = true
-                    Permission.shared.manager.requestAlwaysAuthorization()
+                    if isAlways {
+                        Permission.shared.manager.requestAlwaysAuthorization()
+                    }
                 }
                 else {
+                    if CLLocationManager.authorizationStatus() == .authorizedAlways {
+                        Permission.shared.manager.allowsBackgroundLocationUpdates = true
+                    }
                     self.pendingResultLocation?(1)
                     self.pendingResultLocation = nil
                 }
@@ -236,7 +240,6 @@ class Permission:NSObject,CLLocationManagerDelegate {
     public func run() {
         Permission.shared.manager.delegate = self
         Permission.shared.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        Permission.shared.manager.allowsBackgroundLocationUpdates = true
         Permission.shared.manager.requestWhenInUseAuthorization()
     }
     
@@ -305,7 +308,7 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin, CLLocationManagerDe
                               isAlways = iA
                           }
                       }
-                      if isAlways {
+                      if isAlways && !isRequest {
                           if CLLocationManager.authorizationStatus() == .authorizedAlways {
                               result(1)
                           }
@@ -316,28 +319,28 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin, CLLocationManagerDe
                       else {
                           if call.method == "camera" {
                             Permission.shared.pendingResultCamera = result
-                            Permission.shared.requestPermission(result: result, type: .camera, isRequest: isRequest)
+                            Permission.shared.requestPermission(result: result, type: .camera, isRequest: isRequest, isAlways: isAlways)
                           }
                             else if call.method == "storage" {
                               Permission.shared.pendingResultStorage = result
-                              Permission.shared.requestPermission(result: result, type: .storage, isRequest: isRequest)
+                              Permission.shared.requestPermission(result: result, type: .storage, isRequest: isRequest, isAlways: isAlways)
                             }
                           else if call.method == "location" {
                             Permission.shared.manager = CLLocationManager()
                             Permission.shared.pendingResultLocation = result
-                            Permission.shared.requestPermission(result: result, type: .location, isRequest: isRequest)
+                            Permission.shared.requestPermission(result: result, type: .location, isRequest: isRequest, isAlways: isAlways)
                           }
                           else if call.method == "record_audio" {
                             Permission.shared.pendingResultRecordAudio = result
-                            Permission.shared.requestPermission(result: result, type: .record_audio, isRequest: isRequest)
+                            Permission.shared.requestPermission(result: result, type: .record_audio, isRequest: isRequest, isAlways: isAlways)
                           }
                           else if call.method == "notification" {
                             Permission.shared.pendingResultNotification = result
-                            Permission.shared.requestPermission(result: result, type: .notification, isRequest: isRequest)
+                            Permission.shared.requestPermission(result: result, type: .notification, isRequest: isRequest, isAlways: isAlways)
                           }
                           else if call.method == "microphone" {
                             Permission.shared.pendingResultMicrophone = result
-                            Permission.shared.requestPermission(result: result, type: .microphone, isRequest: isRequest)
+                            Permission.shared.requestPermission(result: result, type: .microphone, isRequest: isRequest, isAlways: isAlways)
                           }
                       }
                       
