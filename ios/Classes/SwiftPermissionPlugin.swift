@@ -199,50 +199,41 @@ class Permission:NSObject,CLLocationManagerDelegate {
     
     func checkLocationPermission(result: FlutterResult,type:AppPermission,isRequest:Bool,isAlways:Bool) {
         if(!isRequest) {
-            permission(isRequest: false,isAlways:isAlways)
+            permission()
         }
         else {
             run(isAlways: isAlways)
         }
     }
-    func permission(isRequest:Bool,isAlways:Bool) {
-        if(isRequest) {
-            run(isAlways: isAlways)
-        }
-        else {
-            switch CLLocationManager.authorizationStatus() {
-            case .restricted, .denied:
-                self.pendingResultLocation?(-1)
-                self.pendingResultLocation = nil
-                break
-            case .authorizedAlways, .authorizedWhenInUse , .authorized:
-                if CLLocationManager.authorizationStatus() != .authorizedAlways {
-                    if isAlways {
-                        Permission.shared.manager.requestAlwaysAuthorization()
-                    }
-                }
-                else {
-                    if CLLocationManager.authorizationStatus() == .authorizedAlways {
-                        Permission.shared.manager.allowsBackgroundLocationUpdates = true
-                    }
-                    self.pendingResultLocation?(1)
-                    self.pendingResultLocation = nil
-                }
-                break
-            default:
-                self.pendingResultLocation?(0)
-                self.pendingResultLocation = nil
-                break
-            }
+    func permission() {
+        switch CLLocationManager.authorizationStatus() {
+        case .restricted, .denied:
+            self.pendingResultLocation?(-1)
+            self.pendingResultLocation = nil
+            break
+        case .authorizedAlways, .authorizedWhenInUse , .authorized:
+            self.pendingResultLocation?(1)
+            self.pendingResultLocation = nil
+            break
+        default:
+            self.pendingResultLocation?(0)
+            self.pendingResultLocation = nil
+            break
         }
     }
     
     public func run(isAlways:Bool) {
         if CLLocationManager.authorizationStatus() == .authorizedWhenInUse  || CLLocationManager.authorizationStatus() == .authorizedAlways {
             if isAlways {
-                Permission.shared.manager.delegate = self
-                Permission.shared.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-                Permission.shared.manager.requestAlwaysAuthorization()
+                if CLLocationManager.authorizationStatus() == .authorizedAlways {
+                    self.pendingResultLocation?(1)
+                    self.pendingResultLocation = nil
+                }
+                else {
+                    Permission.shared.manager.delegate = self
+                    Permission.shared.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+                    Permission.shared.manager.requestAlwaysAuthorization()
+                }
             }
             else {
                 self.pendingResultLocation?(1)
@@ -335,51 +326,41 @@ public class SwiftPermissionPlugin: NSObject, FlutterPlugin, CLLocationManagerDe
                   }
                   else {
                       var isRequest:Bool = false
-                      var isAlways:Bool = false
                       if let dictionary = call.arguments as? [String: Any] {
                           if let iR = dictionary ["isRequest"] as? Bool {
                               isRequest = iR
                           }
-                          if let iA = dictionary["isAlways"] as? Bool {
-                              isAlways = iA
-                          }
                       }
-                      if isAlways && !isRequest {
-                          if CLLocationManager.authorizationStatus() == .authorizedAlways {
-                              result(1)
-                          }
-                          else {
-                              result(0)
-                          }
+                      if call.method == "camera" {
+                        Permission.shared.pendingResultCamera = result
+                        Permission.shared.requestPermission(result: result, type: .camera, isRequest: isRequest, isAlways: false)
                       }
-                      else {
-                          if call.method == "camera" {
-                            Permission.shared.pendingResultCamera = result
-                            Permission.shared.requestPermission(result: result, type: .camera, isRequest: isRequest, isAlways: isAlways)
-                          }
-                            else if call.method == "storage" {
+                        else if call.method == "storage" {
                               Permission.shared.pendingResultStorage = result
-                              Permission.shared.requestPermission(result: result, type: .storage, isRequest: isRequest, isAlways: isAlways)
-                            }
-                          else if call.method == "location" {
-                            Permission.shared.manager = CLLocationManager()
-                            Permission.shared.pendingResultLocation = result
-                            Permission.shared.requestPermission(result: result, type: .location, isRequest: isRequest, isAlways: isAlways)
-                          }
-                          else if call.method == "record_audio" {
-                            Permission.shared.pendingResultRecordAudio = result
-                            Permission.shared.requestPermission(result: result, type: .record_audio, isRequest: isRequest, isAlways: isAlways)
-                          }
-                          else if call.method == "notification" {
-                            Permission.shared.pendingResultNotification = result
-                            Permission.shared.requestPermission(result: result, type: .notification, isRequest: isRequest, isAlways: isAlways)
-                          }
-                          else if call.method == "microphone" {
-                            Permission.shared.pendingResultMicrophone = result
-                            Permission.shared.requestPermission(result: result, type: .microphone, isRequest: isRequest, isAlways: isAlways)
-                          }
+                              Permission.shared.requestPermission(result: result, type: .storage, isRequest: isRequest, isAlways: false)
+                        }
+                      else if call.method == "location" {
+                        Permission.shared.manager = CLLocationManager()
+                        Permission.shared.pendingResultLocation = result
+                        Permission.shared.requestPermission(result: result, type: .location, isRequest: isRequest, isAlways: false)
                       }
-                      
+                      else if call.method == "background_location" {
+                        Permission.shared.manager = CLLocationManager()
+                        Permission.shared.pendingResultLocation = result
+                        Permission.shared.requestPermission(result: result, type: .location, isRequest: isRequest, isAlways: true)
+                      }
+                      else if call.method == "record_audio" {
+                        Permission.shared.pendingResultRecordAudio = result
+                        Permission.shared.requestPermission(result: result, type: .record_audio, isRequest: isRequest, isAlways: false)
+                      }
+                      else if call.method == "notification" {
+                        Permission.shared.pendingResultNotification = result
+                        Permission.shared.requestPermission(result: result, type: .notification, isRequest: isRequest, isAlways: false)
+                      }
+                      else if call.method == "microphone" {
+                        Permission.shared.pendingResultMicrophone = result
+                        Permission.shared.requestPermission(result: result, type: .microphone, isRequest: isRequest, isAlways: false)
+                      }
                 }
     }
 }
