@@ -251,6 +251,29 @@ class Permission:NSObject,CLLocationManagerDelegate {
         
     }
     
+    var authStatus = CLAuthorizationStatus.notDetermined
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        if #unavailable(iOS 14) {
+            if Permission.shared.pendingResultLocation != nil && status != authStatus {
+                switch status {
+                case .restricted, .denied:
+                    authStatus = status
+                    Permission.shared.pendingResultLocation?(-1)
+                    Permission.shared.pendingResultLocation = nil
+                case .authorizedAlways, .authorizedWhenInUse , .authorized:
+                    authStatus = status
+                    Permission.shared.pendingResultLocation?(1)
+                    Permission.shared.pendingResultLocation = nil
+                default:
+                    authStatus = status
+                    Permission.shared.pendingResultLocation?(0)
+                    Permission.shared.pendingResultLocation = nil
+                    break
+                }
+            }
+        }
+    }
+    
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         if Permission.shared.pendingResultLocation != nil {
             switch CLLocationManager.authorizationStatus() {

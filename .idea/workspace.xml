@@ -24,13 +24,9 @@
   <component name="ChangeListManager">
     <list default="true" id="33e35f63-a1b5-49b4-aae2-0062d5906b7f" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.dart_tool/package_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/package_config_subset" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/package_config_subset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dart_tool/version" beforeDir="false" afterPath="$PROJECT_DIR$/.dart_tool/version" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/ios/Pods.build/Release-iphonesimulator/Flutter.build/dgph" beforeDir="false" afterPath="$PROJECT_DIR$/build/ios/Pods.build/Release-iphonesimulator/Flutter.build/dgph" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/ios/Pods.build/Release-iphonesimulator/Pods-Runner.build/dgph" beforeDir="false" afterPath="$PROJECT_DIR$/build/ios/Pods.build/Release-iphonesimulator/Pods-Runner.build/dgph" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/ios/Pods.build/Release-iphonesimulator/permission.build/dgph" beforeDir="false" afterPath="$PROJECT_DIR$/build/ios/Pods.build/Release-iphonesimulator/permission.build/dgph" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ios/Classes/SwiftPermissionPlugin.swift" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Classes/SwiftPermissionPlugin.swift" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
