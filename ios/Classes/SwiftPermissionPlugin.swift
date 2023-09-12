@@ -202,12 +202,12 @@ class Permission:NSObject,CLLocationManagerDelegate {
             permission(isRequest: false,isAlways:isAlways)
         }
         else {
-            run()
+            run(isAlways: isAlways)
         }
     }
     func permission(isRequest:Bool,isAlways:Bool) {
         if(isRequest) {
-            run()
+            run(isAlways: isAlways)
         }
         else {
             switch CLLocationManager.authorizationStatus() {
@@ -237,10 +237,23 @@ class Permission:NSObject,CLLocationManagerDelegate {
         }
     }
     
-    public func run() {
-        Permission.shared.manager.delegate = self
-        Permission.shared.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        Permission.shared.manager.requestWhenInUseAuthorization()
+    public func run(isAlways:Bool) {
+        if CLLocationManager.authorizationStatus() == .authorizedWhenInUse  || CLLocationManager.authorizationStatus() == .authorizedAlways {
+            if isAlways {
+                Permission.shared.manager.delegate = self
+                Permission.shared.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+                Permission.shared.manager.requestAlwaysAuthorization()
+            }
+            else {
+                self.pendingResultLocation?(1)
+                self.pendingResultLocation = nil
+            }
+        }
+        else {
+            Permission.shared.manager.delegate = self
+            Permission.shared.manager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+            Permission.shared.manager.requestWhenInUseAuthorization()
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
