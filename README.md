@@ -13,12 +13,10 @@ Add to AndroidManifest.xml
 
     <!-- Permissions options for the `camera` group -->
     <uses-permission android:name="android.permission.CAMERA"/>
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
     
     <!-- Permissions options for the `location` group -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <!-- Permissions options for the `background_location` group -->
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
