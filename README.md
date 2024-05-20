@@ -44,6 +44,10 @@ Add to Info.plist
     <!-- Permission options for the `camera` group -->
     <key>NSCameraUsageDescription</key>
     <string>camera</string>
+
+    <!-- Permission options for the `storage` group -->
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>camera</string>
     
     <!-- Permission options for the `record_audio` group -->
     <key>NSMicrophoneUsageDescription</key>
