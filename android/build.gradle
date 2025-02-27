@@ -25,6 +25,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace 'wao.flutter.application.project.permission'
     compileSdk 33
 
     sourceSets {
